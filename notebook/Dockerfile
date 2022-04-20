@@ -1,5 +1,5 @@
 # 
-FROM jupyter/pyspark-notebook:spark-3.2.1
+FROM nexus.ssb.no:8445/jupyter/pyspark-notebook:spark-3.2.1
 
 USER root
 
