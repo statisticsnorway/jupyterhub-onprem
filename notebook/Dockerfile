@@ -1,5 +1,6 @@
-# 
 FROM nexus.ssb.no:8445/jupyter/pyspark-notebook:spark-3.2.1
+
+ENV $NB_UID = "0"
 
 USER root
 
