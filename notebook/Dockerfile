@@ -80,6 +80,7 @@ USER root
 
 COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
-    rm -f /tmp/jupyter_notebook_extra_config.py
+    rm -f /tmp/jupyter_notebook_extra_config.py && \
+    fix-permissions /usr/local/spark/conf
 
 USER $NB_UID
