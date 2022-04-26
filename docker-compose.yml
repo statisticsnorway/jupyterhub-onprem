@@ -31,12 +31,28 @@ services:
     volumes:
       # Bind Docker socket on the host so we can connect to the daemon from
       # within the container
-      - "/var/run/docker.sock:/var/run/docker.sock:rw"      
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+
       # Bind Docker volume on host for JupyterHub database and cookie secrets
       - "data:${DATA_VOLUME_CONTAINER}"
+      
+        # Mounting home-directories
       - "/ssb/bruker:/ssb/bruker"
-        #- "/etc/sssd/sssd.conf:/etc/sssd/sssd.conf"
+        
+        # Mounting share directory
+      - "/ssb/share:/ssb/share"
+        
+        # Mounting data nfs share
+      - "/ssb/stamme01:/ssb/stamme01"
+      - "/ssb/stamme02:/ssb/stamme02"
+      - "/ssb/stamme03:/ssb/stamme03"
+      - "/ssb/stamme04:/ssb/stamme04"
+      
+        # Mounting windows file server
+      - "/ssb/x_disk:/ssb/x_disk"  
+        # Mounting /var/lib/sss so we can use sssd users from host
       - "/var/lib/sss:/var/lib/sss"
+
     ports:
       - "443:443"
     links:
@@ -55,12 +71,6 @@ services:
       # Postgres db info
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: hub-db
-      
-      #KERBEROS_REALM: SSB.no
-      #LDAP_URI: ldaps://ldap.ssb.no/
-      #LDAP_BASE_DN: OU=Brukere,OU=SSB,DC=ssb,DC=no
-      #LDAP_BIND_DN: CN=jupyterhub_ldap_search,OU=Service_brukere,OU=Brukere,OU=SSB,DC=ssb,DC=no
-      #LDAP_BIND_PASSWORD: zQ9LaFLBqYYssKAC
     env_file:
       - secrets/postgres.env
     command: >
