@@ -1,7 +1,5 @@
 FROM nexus.ssb.no:8445/jupyter/pyspark-notebook:spark-3.2.1
 
-ENV $NB_UID = "0"
-
 USER root
 
 RUN apt update && \
@@ -9,6 +7,7 @@ RUN apt update && \
     apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y dist-upgrade && \
+    apt-get install -y vim && \
     apt autoremove -y && \
     apt-get -y clean all
 
