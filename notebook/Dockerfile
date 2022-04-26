@@ -1,5 +1,4 @@
-# 
-FROM jupyter/pyspark-notebook:spark-3.2.1
+FROM nexus.ssb.no:8445/jupyter/pyspark-notebook:spark-3.2.1
 
 USER root
 
@@ -8,6 +7,7 @@ RUN apt update && \
     apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y dist-upgrade && \
+    apt-get install -y vim && \
     apt autoremove -y && \
     apt-get -y clean all
 
@@ -80,6 +80,7 @@ USER root
 
 COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
-    rm -f /tmp/jupyter_notebook_extra_config.py
+    rm -f /tmp/jupyter_notebook_extra_config.py && \
+    fix-permissions /usr/local/spark/conf
 
 USER $NB_UID
