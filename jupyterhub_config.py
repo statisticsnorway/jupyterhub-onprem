@@ -14,6 +14,8 @@ c.JupyterHub.spawner_class = "dockerspawner.SystemUserSpawner"
 # then the domain will be cut out once the users notebook server is spawned
 c.PAMAuthenticator.pam_normalize_username = True
 
+# Add admin users
+c.PAMAuthenticator.admin_groups = {'wheel', "RBAG_jupyterhub_admins@ssb.no"}
 
 # Remove users that are no longer able to authenticate
 c.Authenticator.delete_invalid_users = True

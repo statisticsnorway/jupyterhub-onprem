@@ -13,16 +13,9 @@ volumes:
 	@docker volume inspect $(DB_VOLUME_HOST) >/dev/null 2>&1 || docker volume create --name $(DB_VOLUME_HOST)
 
 
-self-signed-cert:
-	# make a self-signed cert
-
 secrets/postgres.env:
 	@echo "Generating postgres password in $@"
 	@echo "POSTGRES_PASSWORD=$(shell openssl rand -hex 32)" > $@
-
-secrets/oauth.env:
-	@echo "Need oauth.env file in secrets with GitHub parameters"
-	@exit 1
 
 secrets/jupyterhub.crt:
 	@echo "Need an SSL certificate in secrets/jupyterhub.crt"
@@ -30,12 +23,6 @@ secrets/jupyterhub.crt:
 
 secrets/jupyterhub.key:
 	@echo "Need an SSL key in secrets/jupyterhub.key"
-	@exit 1
-
-userlist:
-	@echo "Add usernames, one per line, to ./userlist, such as:"
-	@echo "    zoe admin"
-	@echo "    wash"
 	@exit 1
 
 # Do not require cert/key files if SECRETS_VOLUME defined
