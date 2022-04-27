@@ -2,6 +2,22 @@ FROM nexus.ssb.no:8445/jupyter/pyspark-notebook:spark-3.2.1
 
 USER root
 
+RUN apt-get update -y && \
+	apt-get install -y --no-install-recommends "openjdk-11-jdk-headless" \
+		software-properties-common dirmngr build-essential curl libssl-dev libcurl4-openssl-dev libgdal-dev && \
+	# bsdmainutils helped solve colrm message after every command in the terminal
+        apt-get install -y bsdmainutils && \
+        apt autoremove -y && \
+	apt-get -y clean all && \
+	rm -rf /var/lib/apt/lists/*
+
+
+# Installing jwsacruncher, this allows users to use it directly rather than ssh to sas-servers
+# DAPLA created their own version of jwsacruncher to support openjdk-11 and we are lucky to be able to use it
+# https://github.com/statisticsnorway/jupyterhub-project/blob/main/docker/jupyterlab/jwsacruncher-2.2.4.zip
+COPY jwsacruncher-2.2.4.zip /tmp/jwsacruncher-2.2.4.zip
+RUN unzip /tmp/jwsacruncher-2.2.4.zip -d /opt && fix-permissions /opt/jwsacruncher-2.2.4 && rm -f /tmp/jwsacruncher-2.2.4.zip
+
 RUN apt update && \
     apt-get -y clean all && \
     apt-get -y update && \
@@ -72,6 +88,9 @@ RUN echo "**** install jupyterlab-git ****" && \
     conda clean --all -y && \
     jupyter lab clean
 
+RUN echo "**** install pipenv envkernel ****" && \
+    python3 -m pip install ipykernel pipenv envkernel
+
 RUN jupyter lab build --dev-build=False && \
     python3 -m pip install --upgrade jupyterhub && \
     jupyterhub upgrade-db
@@ -82,5 +101,9 @@ COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
     rm -f /tmp/jupyter_notebook_extra_config.py && \
     fix-permissions /usr/local/spark/conf
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod o+x /entrypoint.sh
+RUN /entrypoint.sh
 
 USER $NB_UID
