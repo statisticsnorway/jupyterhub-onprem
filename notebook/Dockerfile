@@ -11,12 +11,12 @@ RUN apt-get update -y && \
 	apt-get -y clean all && \
 	rm -rf /var/lib/apt/lists/*
 
-
 # Installing jwsacruncher, this allows users to use it directly rather than ssh to sas-servers
 # DAPLA created their own version of jwsacruncher to support openjdk-11 and we are lucky to be able to use it
 # https://github.com/statisticsnorway/jupyterhub-project/blob/main/docker/jupyterlab/jwsacruncher-2.2.4.zip
 COPY jwsacruncher-2.2.4.zip /tmp/jwsacruncher-2.2.4.zip
 RUN unzip /tmp/jwsacruncher-2.2.4.zip -d /opt && fix-permissions /opt/jwsacruncher-2.2.4 && rm -f /tmp/jwsacruncher-2.2.4.zip
+RUN ln -s /opt/jwsacruncher-2.2.4/bin/jwsacruncher /usr/bin/jwsacruncher
 
 RUN apt update && \
     apt-get -y clean all && \
@@ -102,8 +102,8 @@ RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_c
     rm -f /tmp/jupyter_notebook_extra_config.py && \
     fix-permissions /usr/local/spark/conf
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod o+x /entrypoint.sh
-RUN /entrypoint.sh
+# Start up hooks
+# https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#startup-hooks
+COPY env.sh /usr/local/bin/before-notebook.d/env.sh
 
 USER $NB_UID

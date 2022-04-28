@@ -1,6 +1,3 @@
-# Copyright (c) Jupyter Development Team.
-# Distributed under the terms of the Modified BSD License.
-
 # JupyterHub docker-compose configuration file
 version: "2"
 
@@ -42,7 +39,7 @@ services:
         # Mounting share directory
       - "/ssb/share:/ssb/share"
         
-        # Mounting data nfs share
+        # Mounting data nfs shares
       - "/ssb/stamme01:/ssb/stamme01"
       - "/ssb/stamme02:/ssb/stamme02"
       - "/ssb/stamme03:/ssb/stamme03"

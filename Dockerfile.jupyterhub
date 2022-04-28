@@ -9,7 +9,8 @@ RUN apt-get install packagekit realmd samba-common-bin sssd-tools adcli krb5-use
 
 # Installing jupyterhub packages
 RUN python3 -m pip install dockerspawner>=12.1.0 && \
-    python3 -m pip install psycopg2-binary
+    python3 -m pip install psycopg2-binary && \
+    python3 -m pip install jupyterhub_idle_culler
 
 # copy jupyterhub_config.py to container
 COPY jupyterhub_config.py /srv/jupyterhub

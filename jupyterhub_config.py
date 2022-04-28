@@ -41,7 +41,7 @@ c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
 
 # Pass the network name as argument to spawned containers
-c.DockerSpawner.extra_host_config = { "network_mode": network_name}
+c.DockerSpawner.extra_host_config = { "network_mode": network_name }
 
 # Memory limits
 # Documentation https://jupyterhub-dockerspawner.readthedocs.io/en/latest/api/index.html
@@ -67,6 +67,23 @@ c.DockerSpawner.remove_containers = True
 
 # For debugging arguments passed to spawned containers
 c.DockerSpawner.debug = True
+
+# Prometheus
+c.JupyterHub.authenticate_prometheus = False
+
+# Jupyterhub idle-culler-service
+import sys
+c.JupyterHub.services = [
+    {
+        "name": "jupyterhub-idle-culler-service",
+        "command": [
+            sys.executable,
+            "-m", "jupyterhub_idle_culler",
+            "--timeout=3600",
+        ],
+        "admin": True,
+    }
+]
 
 # User containers will access hub by container name on the Docker network
 c.JupyterHub.hub_ip = "jupyterhub"
