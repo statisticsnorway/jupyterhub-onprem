@@ -61,9 +61,6 @@ RUN echo "**** install jupyterlab-git ****" && \
     python3 -m pip install jupyterlab-dash && \
     echo "**** install dash ****" && \
     python3 -m pip install jupyter-dash && \
-    #echo "**** install streamlit ****" && \
-    #showstopper: https://github.com/streamlit/streamlit/issues/2703
-    #python3 -m pip install streamlit && \
     echo "**** install jupyter-lsp ****" && \
     python3 -m pip install jupyterlab-lsp && \
     python3 -m pip install python-language-server[all] && \
@@ -71,16 +68,12 @@ RUN echo "**** install jupyterlab-git ****" && \
     python3 -m pip install ipysheet && \
     echo "**** install ipyaggrid ****" && \
     python3 -m pip install ipyaggrid && \
-    #echo "**** install qgrid ****" && \
-    #showstopper: https://github.com/quantopian/qgrid/issues/350
-    #python3 -m pip install qgrid2 && \
     echo "**** install fuzzywuzzy[speedup] ****" && \
     python3 -m pip install fuzzywuzzy[speedup] && \
     echo "**** install jupyterlab-system-monitor ****" && \
     python3 -m pip install jupyterlab-system-monitor && \
     echo "**** install jupytext ****" && \
     python3 -m pip install jupytext && \
-    #jupyter labextension install --no-build jupyterlab-jupytext && \
     echo "**** uninstall IPython Parallels (comes default with dockerhub image)  ****" && \
     python3 -m pip uninstall -y ipyparallel && \
     python3 -m pip cache purge && \
@@ -101,6 +94,11 @@ COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
     rm -f /tmp/jupyter_notebook_extra_config.py && \
     fix-permissions /usr/local/spark/conf
+
+# Pip config so users install from Nexus.
+# Reason i don't copy it into the container earlier
+# is because the image is not built in the same environment
+COPY pip.conf /etc/pip.conf
 
 # Start up hooks
 # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#startup-hooks
