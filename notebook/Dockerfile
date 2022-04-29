@@ -161,11 +161,11 @@ RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_c
     rm -f /tmp/jupyter_notebook_extra_config.py && \
     fix-permissions /usr/local/spark/conf
 
-# Pip and R config so users install from Nexus.
-# Reason i don't copy them into the container earlier
-# is because the image is ment to be built locally
-COPY pip.conf /etc/pip.conf
-COPY .Rprofile /etc/.Rprofile
+# Pip config so users install from Nexus.
+RUN echo 'export PIP_INDEX="http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi"' >> /etc/bash.bashrc && \
+    echo 'export PIP_INDEX_URL="http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple"' >> /etc/bash.bashrc && \
+    echo 'export PIPENV_PYPI_MIRROR="$PIP_INDEX_URL"' >> /etc/bash.bashrc && \
+    echo 'export PIP_TRUSTED_HOST="pl-nexuspro-p.ssb.no"' >> /etc/bash.bashrc  
 
 # Start up hooks
 # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#startup-hooks
