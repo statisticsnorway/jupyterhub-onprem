@@ -2,14 +2,29 @@ FROM nexus.ssb.no:8445/jupyter/pyspark-notebook:spark-3.2.1
 
 USER root
 
+# Installing R based on documentation for ubuntu https://cloud.r-project.org/
 RUN apt-get update -y && \
+	# install two helper packages we need 'software-properties-common && dirmngr'
 	apt-get install -y --no-install-recommends "openjdk-11-jdk-headless" \
 		software-properties-common dirmngr build-essential curl libssl-dev libcurl4-openssl-dev libgdal-dev && \
-	# bsdmainutils helped solve colrm message after every command in the terminal
-        apt-get install -y bsdmainutils && \
-        apt autoremove -y && \
+        
+	# add the signing key (by Michael Rutter) for these repos
+	# To verify key, run gpg --show-keys /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc 
+	# Fingerprint: 298A3A825C0D65DFD57CBB651716619E084DAB9
+	wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
+        
+	# add the R 4.0 repo from CRAN -- adjust 'focal' to 'groovy' or 'bionic' as needed
+        add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" && \
+        
+	# Get access 5000+ CRAN packages
+        add-apt-repository ppa:c2d4u.team/c2d4u4.0+ && \
+        
+	apt autoremove -y && \
 	apt-get -y clean all && \
 	rm -rf /var/lib/apt/lists/*
+
+ENV R_HOME /usr/lib/R
+ENV R_LIBS_USER /usr/lib/R/library
 
 # Installing jwsacruncher, this allows users to use it directly rather than ssh to sas-servers
 # DAPLA created their own version of jwsacruncher to support openjdk-11 and we are lucky to be able to use it
@@ -18,14 +33,47 @@ COPY jwsacruncher-2.2.4.zip /tmp/jwsacruncher-2.2.4.zip
 RUN unzip /tmp/jwsacruncher-2.2.4.zip -d /opt && fix-permissions /opt/jwsacruncher-2.2.4 && rm -f /tmp/jwsacruncher-2.2.4.zip
 RUN ln -s /opt/jwsacruncher-2.2.4/bin/jwsacruncher /usr/bin/jwsacruncher
 
+COPY r-packages.txt /tmp/r-packages.txt
+
 RUN apt update && \
     apt-get -y clean all && \
     apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y dist-upgrade && \
+
+    # Installing VIM
     apt-get install -y vim && \
+
+    # Installing bsdmainutils, helped solve colrm message after every command in the terminal
+    apt-get install -y bsdmainutils && \
+    
+    # Installing R + R packages from r-packages.txt
+    xargs apt-get install -y --no-install-recommends < /tmp/r-packages.txt && \
     apt autoremove -y && \
     apt-get -y clean all
+
+# Setup R java support and install R packages that are not available as Ubuntu packages
+RUN R CMD javareconf -e && \
+    R -e "install.packages('RTextTools', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('configr', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('RegSDC', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('oysteR', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('writexl', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('concaveman', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('cppRouting', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('rjwsacruncher', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('klassR', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('antiword', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('textshape', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('striprtf', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('textreadr', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('terra', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('raster', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
+    R -e "install.packages('leaflet', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+
+RUN R -e "remotes::install_github('r-barnes/dggridR', vignette=TRUE)" && \
+    R -e "remotes::install_github('statisticsnorway/Kostra')" && \
+    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 USER $NB_UID
 
@@ -84,9 +132,27 @@ RUN echo "**** install jupyterlab-git ****" && \
 RUN echo "**** install pipenv envkernel ****" && \
     python3 -m pip install ipykernel pipenv envkernel
 
+# Customer defined libraries
+RUN echo "**** install ssb_spark_tools ****" && \
+    python3 -m pip install ssb_spark_tools==0.1.6 pytest pytest_tornasync pytest-cov pytest-mock pyjstat xmltodict lxml holidays PyGithub pre-commit pyminizip rich openpyxl && \
+    echo "**** install sphinx ****" && \
+    python3 -m pip install sphinx sphinx-autodoc-defaultargs sphinx-autodoc-typehints sphinx-rtd-theme && \
+    echo "**** install pandas-gbq and correponding google (auth/cloud/bigquery) dependencies " && \
+    python3 -m pip install pandas-gbq && \
+    echo "**** install collapsible headers (for Jupyterlab >= 3.0) ****" && \
+    python3 -m pip install aquirdturtle_collapsible_headings && \
+    echo "**** install ipython extensions" && \
+    python3 -m pip install pyspark pyarrow
+
 RUN jupyter lab build --dev-build=False && \
     python3 -m pip install --upgrade jupyterhub && \
     jupyterhub upgrade-db
+
+# Copy the kernels. (pre-defined kernels are found at /opt/conda/share/jupyter/kernels)
+COPY kernels/ir/kernel.json /opt/conda/share/jupyter/kernels/ir/
+COPY kernels/ir/logo-64x64.png /opt/conda/share/jupyter/kernels/ir/
+COPY kernels/ir/Rstartup /opt/conda/share/jupyter/kernels/ir/
+
 
 USER root
 
@@ -95,10 +161,11 @@ RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_c
     rm -f /tmp/jupyter_notebook_extra_config.py && \
     fix-permissions /usr/local/spark/conf
 
-# Pip config so users install from Nexus.
-# Reason i don't copy it into the container earlier
-# is because the image is not built in the same environment
+# Pip and R config so users install from Nexus.
+# Reason i don't copy them into the container earlier
+# is because the image is ment to be built locally
 COPY pip.conf /etc/pip.conf
+COPY .Rprofile /etc/.Rprofile
 
 # Start up hooks
 # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#startup-hooks

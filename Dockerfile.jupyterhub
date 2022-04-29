@@ -16,10 +16,10 @@ RUN python3 -m pip install dockerspawner>=12.1.0 && \
 COPY jupyterhub_config.py /srv/jupyterhub
 
 # Copy TLS certificate and key
-ENV SSL_CERT /srv/jupyterhub/secrets/certificates.crt
+ENV SSL_CERT /srv/jupyterhub/secrets/certificates.pem
 ENV SSL_KEY /srv/jupyterhub/secrets/starssb.key
 
-COPY ./secrets/*.crt $SSL_CERT
+COPY ./secrets/*.pem $SSL_CERT
 COPY ./secrets/*.key $SSL_KEY
 
 RUN chmod 700 /srv/jupyterhub/secrets && \
