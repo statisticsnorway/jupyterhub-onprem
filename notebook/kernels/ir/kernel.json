@@ -10,7 +10,6 @@
     "{connection_file}"
   ],
   "env": {
-    "SPARK_HOME": "/usr/local/spark",
     "R_PROFILE_USER" : "/opt/conda/share/jupyter/kernels/ir/Rstartup",
     "R_LIBS_USER": "/usr/lib/R/library"
   }
