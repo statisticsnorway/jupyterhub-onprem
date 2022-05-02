@@ -1,9 +1,0 @@
-.First <- function() {
-  home <- Sys.getenv("R_HOME")
-  .libPaths(c(file.path(home, "lib"), .libPaths()))
-
-  r <- getOption("repos")
-  r["CRAN"] <- "https://nexus.ssb.no/repository/CRAN/"
-  options(repos = r)
-  rm(r)
-}

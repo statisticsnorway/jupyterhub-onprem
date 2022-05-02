@@ -1,7 +1,7 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 ARG JUPYTERHUB_VERSION
-FROM nexus.ssb.no:8445/jupyterhub/jupyterhub:$JUPYTERHUB_VERSION
+FROM jupyterhub/jupyterhub:$JUPYTERHUB_VERSION
 
 # Installing realmd for AD-integrated user authentication
 RUN apt-get update -qq
