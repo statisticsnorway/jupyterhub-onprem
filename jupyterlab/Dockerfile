@@ -201,13 +201,6 @@ COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
     rm -f /tmp/jupyter_notebook_extra_config.py
 
-# Pip config so users install from Nexus.
-#RUN echo 'export PIP_INDEX="http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi"' >> /etc/bash.bashrc && \
-#    echo 'export PIP_INDEX_URL="http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple"' >> /etc/bash.bashrc && \
-#    echo 'export PIPENV_PYPI_MIRROR="$PIP_INDEX_URL"' >> /etc/bash.bashrc && \
-#    echo 'export PIP_TRUSTED_HOST="pl-nexuspro-p.ssb.no"' >> /etc/bash.bashrc && \
-#    echo 'export PIP_REQUIRE_VIRTUALENV=true' >> /etc/bash.bashrc 
-
 # Start up hooks
 # Setting up environment variables for pip, oracle etc..
 # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#startup-hooks
