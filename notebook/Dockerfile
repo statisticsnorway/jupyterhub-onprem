@@ -137,35 +137,49 @@ RUN echo "**** install ssb_spark_tools ****" && \
     python3 -m pip install ssb_spark_tools==0.1.6 pytest pytest_tornasync pytest-cov pytest-mock pyjstat xmltodict lxml holidays PyGithub pre-commit pyminizip rich openpyxl && \
     echo "**** install sphinx ****" && \
     python3 -m pip install sphinx sphinx-autodoc-defaultargs sphinx-autodoc-typehints sphinx-rtd-theme && \
-    echo "**** install pandas-gbq and correponding google (auth/cloud/bigquery) dependencies " && \
+    echo "**** install pandas-gbq and correponding google (auth/cloud/bigquery) dependencies ****" && \
     python3 -m pip install pandas-gbq && \
     echo "**** install collapsible headers (for Jupyterlab >= 3.0) ****" && \
     python3 -m pip install aquirdturtle_collapsible_headings && \
-    echo "**** install ipython extensions" && \
-    python3 -m pip install pyspark pyarrow
+    echo "**** install pyspark and pyarrow ****" && \
+    python3 -m pip install --default-timeout=1000 pyspark pyarrow
 
 RUN jupyter lab build --dev-build=False && \
     python3 -m pip install --upgrade jupyterhub && \
     jupyterhub upgrade-db
 
+USER root
+
+# Allowing usage of stamme_variabler in the terminal
+# stamme_variabler is also useable in the kernels as
+# the file is sourced before the kernels start
+RUN ln -s /ssb/share/etc/stamme_variabel /etc/profile.d/stamme_variabel
+
 # Copy the kernels. (pre-defined kernels are found at /opt/conda/share/jupyter/kernels)
 COPY kernels/ir/kernel.json /opt/conda/share/jupyter/kernels/ir/
 COPY kernels/ir/logo-64x64.png /opt/conda/share/jupyter/kernels/ir/
 COPY kernels/ir/Rstartup /opt/conda/share/jupyter/kernels/ir/
+COPY kernels/ir/r.sh /opt/conda/share/jupyter/kernels/ir/
 
+COPY kernels/python3/kernel.json /opt/conda/share/jupyter/kernels/python3/
+COPY kernels/python3/python.sh /opt/conda/share/jupyter/kernels/python3/
+COPY kernels/python3/logo-32x32.png /opt/conda/share/jupyter/kernels/python3/
+COPY kernels/python3/logo-64x64.png /opt/conda/share/jupyter/kernels/python3/
 
-USER root
+# Allowing everyone to execute python.sh and r.sh, this is done indirectly by users
+RUN chmod +x /opt/conda/share/jupyter/kernels/python3/python.sh
+RUN chmod +x /opt/conda/share/jupyter/kernels/ir/r.sh
 
 COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
-    rm -f /tmp/jupyter_notebook_extra_config.py && \
-    fix-permissions /usr/local/spark/conf
+    rm -f /tmp/jupyter_notebook_extra_config.py
 
 # Pip config so users install from Nexus.
 RUN echo 'export PIP_INDEX="http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi"' >> /etc/bash.bashrc && \
     echo 'export PIP_INDEX_URL="http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple"' >> /etc/bash.bashrc && \
     echo 'export PIPENV_PYPI_MIRROR="$PIP_INDEX_URL"' >> /etc/bash.bashrc && \
-    echo 'export PIP_TRUSTED_HOST="pl-nexuspro-p.ssb.no"' >> /etc/bash.bashrc  
+    echo 'export PIP_TRUSTED_HOST="pl-nexuspro-p.ssb.no"' >> /etc/bash.bashrc && \
+    echo 'export PIP_REQUIRE_VIRTUALENV=true' >> /etc/bash.bashrc 
 
 # Start up hooks
 # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#startup-hooks

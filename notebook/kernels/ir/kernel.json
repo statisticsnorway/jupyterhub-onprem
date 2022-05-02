@@ -1,16 +1,9 @@
 {
-  "display_name": "R 4.2 (Standard)",
+  "display_name": "R",
   "language": "R",
   "argv": [
-    "/usr/bin/R",
-    "--slave",
-    "-e",
-    "IRkernel::main()",
+    "/opt/conda/share/jupyter/kernels/ir/r.sh",
     "--args",
     "{connection_file}"
-  ],
-  "env": {
-    "R_PROFILE_USER" : "/opt/conda/share/jupyter/kernels/ir/Rstartup",
-    "R_LIBS_USER": "/usr/lib/R/library"
-  }
+  ]
 }
