@@ -152,19 +152,21 @@ RUN apt update && \
     apt autoremove -y && \
     apt-get -y clean all
 
-COPY oracle-instantclient-basic-21.1.0.0.0-1.x86_64.rpm /tmp/
-COPY oracle-instantclient-devel-21.1.0.0.0-1.x86_64.rpm /tmp/
-COPY oracle-instantclient-sqlplus-21.1.0.0.0-1.x86_64.rpm /tmp/
-COPY oracle-instantclient-odbc-21.1.0.0.0-1.x86_64.rpm /tmp/
-COPY oracle-instantclient-jdbc-21.1.0.0.0-1.x86_64.rpm /tmp/
-COPY oracle-instantclient-tools-21.1.0.0.0-1.x86_64.rpm /tmp/
+# Downloading oracle instant-client components and saving to /tmp
+RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm -P /tmp/
 
-RUN alien -i /tmp/oracle-instantclient-basic-21.1.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-devel-21.1.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-sqlplus-21.1.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-odbc-21.1.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-jdbc-21.1.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-tools-21.1.0.0.0-1.x86_64.rpm && \
+# Installing oracle-instantclient components using alien
+RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm && \
     rm -rf /tmp/oracle-instantclient-*
 
 # libaio required by oracle 64-bit client
