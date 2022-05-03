@@ -4,8 +4,8 @@ ARG JUPYTERHUB_VERSION
 FROM jupyterhub/jupyterhub:$JUPYTERHUB_VERSION
 
 # Installing realmd for AD-integrated user authentication
-RUN apt-get update -qq
-RUN apt-get install packagekit realmd samba-common-bin sssd-tools adcli krb5-user openssh-server ldap-utils -y
+RUN apt-get update -qq && \
+    apt-get install sssd-tools -y
 
 # Installing jupyterhub packages
 RUN python3 -m pip install dockerspawner>=12.1.0 && \
