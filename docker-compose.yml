@@ -33,20 +33,21 @@ services:
       # Bind Docker volume on host for JupyterHub database and cookie secrets
       - "data:${DATA_VOLUME_CONTAINER}"
       
+      - "/ssb:/ssb"
         # Mounting home-directories
-      - "/ssb/bruker:/ssb/bruker"
+        #- "/ssb/bruker:/ssb/bruker"
         
         # Mounting share directory
-      - "/ssb/share:/ssb/share"
+        #- "/ssb/share:/ssb/share"
         
         # Mounting data nfs shares
-      - "/ssb/stamme01:/ssb/stamme01"
-      - "/ssb/stamme02:/ssb/stamme02"
-      - "/ssb/stamme03:/ssb/stamme03"
-      - "/ssb/stamme04:/ssb/stamme04"
+        #- "/ssb/stamme01:/ssb/stamme01"
+        #- "/ssb/stamme02:/ssb/stamme02"
+        #- "/ssb/stamme03:/ssb/stamme03"
+        #- "/ssb/stamme04:/ssb/stamme04"
       
         # Mounting windows file server
-      - "/ssb/x_disk:/ssb/x_disk"  
+        #- "/ssb/x_disk:/ssb/x_disk"  
         # Mounting /var/lib/sss so we can use sssd users from host
       - "/var/lib/sss:/var/lib/sss"
 
