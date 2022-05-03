@@ -52,8 +52,6 @@ services:
       #DOCKER_NOTEBOOK_DIR: ${DOCKER_NOTEBOOK_DIR}
       # Using this run command (optional)
       DOCKER_SPAWN_CMD: ${DOCKER_SPAWN_CMD}
-      # Jupyter crypt key
-      #JUPYTERHUB_CRYPT_KEY: ${JUPYTERHUB_CRYPT_KEY}
       # Postgres db info
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: hub-db
