@@ -51,13 +51,6 @@ c.DockerSpawner.mem_limit = "2G"
 # Mounting /ssb/bruker from the jupyterhub container to the user container
 c.DockerSpawner.volumes = { 
         "/ssb": "/ssb"
-#        "/ssb/bruker": "/ssb/bruker",
-#        "/ssb/share": "/ssb/share",
-#        "/ssb/stamme01": "/ssb/stamme01",
-#        "/ssb/stamme02": "/ssb/stamme02",
-#        "/ssb/stamme03": "/ssb/stamme03",
-#        "/ssb/stamme04": "/ssb/stamme04",
-#        "/ssb/x_disk": "/ssb/x_disk"
 }
 
 # host_homedir_format_string must be set to map /ssb/bruker/{username} to /home/{username}
