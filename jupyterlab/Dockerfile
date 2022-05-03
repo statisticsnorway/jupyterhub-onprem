@@ -43,31 +43,28 @@ RUN apt update && \
 
 # Setup R java support and install R packages that are not available as Ubuntu packages
 RUN R CMD javareconf -e && \
-    R -e "install.packages('RTextTools', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('configr', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('RegSDC', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('oysteR', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('writexl', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('concaveman', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('cppRouting', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('rjwsacruncher', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('klassR', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('antiword', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('textshape', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('striprtf', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('textreadr', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('terra', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('raster', dependencies=FALSE, repos='http://cran.rstudio.com/')" && \
-    R -e "install.packages('leaflet', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+    R -e "install.packages('RTextTools', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('configr', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('RegSDC', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('oysteR', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('writexl', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('concaveman', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('cppRouting', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('rjwsacruncher', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('klassR', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('antiword', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('textshape', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('striprtf', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('textreadr', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('terra', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('raster', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('leaflet', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')"
 
-RUN R -e "remotes::install_github('r-barnes/dggridR', vignette=TRUE)" && \
-    R -e "remotes::install_github('statisticsnorway/Kostra')" && \
+RUN R -e "remotes::install_github('statisticsnorway/Kostra')" && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 USER $NB_UID
 
-# TODO: python3 -m pip install --no-cache-dir -r requirements.txt
-# python3 -m pip install --no-cache-dir --upgrade pip
 RUN echo "**** install jupyterlab-git ****" && \
     python3 -m pip install --upgrade jupyterlab-git && \
     echo "**** install nbdime ****" && \
