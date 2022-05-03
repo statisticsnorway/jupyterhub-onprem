@@ -2,6 +2,13 @@
 
 export FROM_ENVSH=true
 
+# Tried adding all of the lines below in Dockerfile but failed.
+# For some reason stamme_variabel could not be read
+# and oracle didn't "find" the oracle variabels.
+# I checked and the environment variables did exist.
+# Because this file runs every time a user starts a server
+# we ensure the user gets the environment variables needed.
+
 # Get all variables from stamme_variabel
 source /etc/profile.d/stamme_variabel
 
