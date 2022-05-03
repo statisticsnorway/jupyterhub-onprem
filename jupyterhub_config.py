@@ -50,7 +50,7 @@ c.DockerSpawner.mem_limit = "2G"
 
 # Mounting /ssb/bruker from the jupyterhub container to the user container
 c.DockerSpawner.volumes = { 
-         "/ssb", "/ssb"
+        "/ssb": "/ssb"
 #        "/ssb/bruker": "/ssb/bruker",
 #        "/ssb/share": "/ssb/share",
 #        "/ssb/stamme01": "/ssb/stamme01",
