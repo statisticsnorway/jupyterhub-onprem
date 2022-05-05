@@ -144,6 +144,7 @@ RUN apt update && \
     apt-get -y install alien && \
     apt-get -y install vim && \
     apt-get -y install nedit && \
+    apt-get -y install jq && \
     # Installing bsdmainutils, helped solve colrm message after every command in the terminal
     apt-get install -y bsdmainutils && \
     apt autoremove -y && \
@@ -193,6 +194,10 @@ COPY kernels/python3/logo-64x64.png /opt/conda/share/jupyter/kernels/python3/
 # Allowing everyone to execute python.sh and r.sh, this is done indirectly by users
 RUN chmod +x /opt/conda/share/jupyter/kernels/python3/python.sh
 RUN chmod +x /opt/conda/share/jupyter/kernels/ir/r.sh
+
+COPY python_env.bash /usr/local/bin/python_env.bash
+RUN chmod +x /usr/local/bin/python_env.bash
+RUN ln -s /usr/local/bin/python_env.bash /usr/local/bin/python_env
 
 COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
