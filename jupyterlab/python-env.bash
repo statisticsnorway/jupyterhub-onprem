@@ -47,9 +47,14 @@ if [ "$1" == "create" ]; then
         mkdir -p "$VIRTUAL_ENVIRONMENT_PROJECT_DIRECTORY"
     else
         echo "Project already exists at '$VIRTUAL_ENVIRONMENT_PROJECT_DIRECTORY'"
-        echo "If you want to delete the project and re-create it please run 'python-env delete $NEW_PROJECT_NAME' and rebuild using 'python-env create $NEW_PROJECT_NAME'"
-        echo "Please note 'project_env delete' will delete the virtual environment and jupyterlab kernel"
-        exit 1
+        while true; do
+            read -p "Do you wish to continue regardless? " yn
+            case $yn in
+                [Yy]* ) break;;
+                [Nn]* ) exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done 
     fi
      
      # Setting up jupyterlab kernel and pipenv for the user project
@@ -91,7 +96,9 @@ if [ "$1" == "create" ]; then
      # cut out last line of python.sh to replace which python binary is used
      sed -i '$ d' "$NEW_KERNEL_PATH/python.sh"
      echo "exec $NEW_PYPATH/bin/python -m ipykernel \$@" >> "$NEW_KERNEL_PATH/python.sh" 
-        
+     
+     echo "---> Your project is located at: '$VIRTUAL_ENVIRONMENT_PROJECT_DIRECTORY' <---"
+
      unset PROJECT_VIRTUAL_ENVIRONMENT
      exit 0
 
