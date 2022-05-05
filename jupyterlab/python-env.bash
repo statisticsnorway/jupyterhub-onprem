@@ -2,12 +2,12 @@
 
 # CLI tool based on the CLI tool in DAPLA
 
-# set -e
+set -e
 
 if [ "$1" == "create" ]; then
     if [ $# -ne 2 ]; then
         echo "This command creates a directory in your home directory, installs jupyterlab kernel and install a virutal environment for Python"
-        echo "Exactly 2 arguments must be supplied to 'python_env', 'create' and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
+        echo "Exactly 2 arguments must be supplied to 'python-env', 'create' and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
         exit 1
     fi
     
@@ -47,7 +47,7 @@ if [ "$1" == "create" ]; then
         mkdir -p "$VIRTUAL_ENVIRONMENT_PROJECT_DIRECTORY"
     else
         echo "Project already exists at '$VIRTUAL_ENVIRONMENT_PROJECT_DIRECTORY'"
-        echo "If you want to delete the project and re-create it please run 'python_env delete $NEW_PROJECT_NAME' and rebuild using 'python_env create $NEW_PROJECT_NAME'"
+        echo "If you want to delete the project and re-create it please run 'python-env delete $NEW_PROJECT_NAME' and rebuild using 'python-env create $NEW_PROJECT_NAME'"
         echo "Please note 'project_env delete' will delete the virtual environment and jupyterlab kernel"
         exit 1
     fi
@@ -62,7 +62,7 @@ if [ "$1" == "create" ]; then
      echo "Installing ipykernel, which is needed to create new kernels"
      pipenv run pip install ipykernel
      echo "In the newly created pipenv associated with the project, create new kernel with name '$NEW_PROJECT_NAME'..."
-     pipenv run python -m ipykernel install --name="$NEW_PROJECT_NAME"
+     pipenv run python -m ipykernel install --user --name="$NEW_PROJECT_NAME"
         
      NEW_PYPATH="$(pipenv --venv)"
        
@@ -98,7 +98,7 @@ if [ "$1" == "create" ]; then
 elif [ "$1" == "delete" ]; then
     if [ $# -ne 2 ]; then
         echo "This command deletes virtual environment and kernel but allows the project-directory to stay so you don't lose any code"
-        echo "Exactly 2 arguments must be supplied to 'python_env', create and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
+        echo "Exactly 2 arguments must be supplied to 'python-env', create and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
         echo "To only delete the kernel, but not the pipenv, run 'jupyter kernelspec uninstall project_name'."
 
         echo "Here is a list of your projects"
@@ -140,4 +140,7 @@ elif [ "$1" == "delete" ]; then
     jupyter kernelspec remove "$PROJECT_NAME"
     
     exit 0
+else
+  echo "'python-env' takes argument 'create', 'delete'. Try them without further arguments for more info about what they do."
+  exit 1
 fi

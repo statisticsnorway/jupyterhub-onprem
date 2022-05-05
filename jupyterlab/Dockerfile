@@ -195,9 +195,9 @@ COPY kernels/python3/logo-64x64.png /opt/conda/share/jupyter/kernels/python3/
 RUN chmod +x /opt/conda/share/jupyter/kernels/python3/python.sh
 RUN chmod +x /opt/conda/share/jupyter/kernels/ir/r.sh
 
-COPY python_env.bash /usr/local/bin/python_env.bash
-RUN chmod +x /usr/local/bin/python_env.bash
-RUN ln -s /usr/local/bin/python_env.bash /usr/local/bin/python_env
+COPY python-env.bash /usr/local/bin/python-env.bash
+RUN chmod +x /usr/local/bin/python-env.bash
+RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
 
 COPY jupyter_notebook_extra_config.py /tmp/
 RUN cat /tmp/jupyter_notebook_extra_config.py >> /etc/jupyter/jupyter_notebook_config.py && \
