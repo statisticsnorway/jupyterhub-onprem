@@ -135,6 +135,8 @@ elif [ "$1" == "delete" ]; then
     PIPENV_PATH="$(pipenv --venv)"
     echo "Path to pipenv virtual environment associated with '$PROJECT_NAME': $PIPENV_PATH"
     
+    # Kill open files in the project's virutalenv
+    lsof +D $PIPENV_PATH | awk '{print $2}' | tail -n +2 | xargs -r kill -9
     rm -rf "$PIPENV_PATH"
     
     echo "Virtual environment deleted"
