@@ -2,8 +2,6 @@
 
 # CLI tool based on the CLI tool in DAPLA
 
-set -e
-
 if [ "$1" == "create" ]; then
     if [ $# -ne 2 ]; then
         echo "This command creates a directory in your home directory, installs jupyterlab kernel and install a virutal environment for Python"
@@ -77,7 +75,7 @@ if [ "$1" == "create" ]; then
          echo "Creating kernel at '$NEW_KERNEL_PATH'"
          mkdir -p "$NEW_KERNEL_PATH"
      fi
-        
+    
      TEMPLATE="/opt/conda/share/jupyter/kernels/python3"
 
      # Copying files from the standard python3 kernel we offer
@@ -86,7 +84,7 @@ if [ "$1" == "create" ]; then
         
      cp "$TEMPLATE/logo-32x32.png" "$NEW_KERNEL_PATH/logo-32x32.png"
      cp "$TEMPLATE/logo-64x64.png" "$NEW_KERNEL_PATH/logo-64x64.png"
-        
+    
      DATA=`cat $NEW_KERNEL_PATH/kernel.json` 
      # Change json values in kernel.json for the new kernel
      jq --arg new_name "$NEW_PROJECT_NAME" \
