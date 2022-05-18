@@ -93,6 +93,7 @@ if [ "$1" == "create" ]; then
 
      # cut out last line of python.sh to replace which python binary is used
      sed -i '$ d' "$NEW_KERNEL_PATH/python.sh"
+     echo -e "export PYTHONPATH=$NEW_PYPATH\n" >> "$NEW_KERNEL_PATH/python.sh"
      echo "exec $NEW_PYPATH/bin/python -m ipykernel \$@" >> "$NEW_KERNEL_PATH/python.sh" 
      
      echo "---> Your project is located at: '$VIRTUAL_ENVIRONMENT_PROJECT_DIRECTORY' <---"
