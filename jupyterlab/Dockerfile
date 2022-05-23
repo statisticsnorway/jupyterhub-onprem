@@ -31,8 +31,25 @@ RUN ln -s /opt/jwsacruncher-2.2.4/bin/jwsacruncher /usr/bin/jwsacruncher
 
 COPY r-packages.txt /tmp/r-packages.txt
 
-RUN apt update && \
-    apt-get -y clean all && \
+# arrow requirements
+RUN apt-get update -y && \
+    apt-get install -y cmake && \
+    wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb -P /tmp/ && \
+    apt-get install -y -V /tmp/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb && \
+    apt-get update -y && \
+    apt-get install -y -V libarrow-dev && \
+    apt-get install -y -V libarrow-glib-dev && \
+    apt-get install -y -V libarrow-dataset-dev && \
+    apt-get install -y -V libarrow-dataset-glib-dev && \
+    apt-get install -y -V libarrow-flight-dev && \
+    apt-get install -y -V libarrow-flight-glib-dev && \
+    apt-get install -y -V libplasma-dev && \
+    apt-get install -y -V libplasma-glib-dev && \
+    apt-get install -y -V libgandiva-dev && \
+    apt-get install -y -V libgandiva-glib-dev && \
+    apt-get install -y -V libparquet-dev && \
+    apt-get install -y -V libparquet-glib-dev && \
+    rm -rf /tmp/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
 
 RUN apt-get -y clean all && \
     apt-get -y update && \
@@ -61,6 +78,7 @@ RUN R CMD javareconf -e && \
     R -e "install.packages('terra', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
     R -e "install.packages('raster', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
     R -e "install.packages('leaflet', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')"
+    R -e "install.packages('arrow', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/');arrow::install_arrow(repos='https://nexus.ssb.no/repository/CRAN/', minimal = FALSE)" && \
 
 RUN R -e "remotes::install_github('statisticsnorway/Kostra')" && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds
