@@ -77,7 +77,12 @@ RUN R CMD javareconf -e && \
     R -e "install.packages('textreadr', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
     R -e "install.packages('terra', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
     R -e "install.packages('raster', dependencies=FALSE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
-    R -e "install.packages('leaflet', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')"
+    R -e "install.packages('leaflet', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('ROracle', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('dcmodify', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('ggiraph', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('getPass', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('simputation', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
     R -e "install.packages('arrow', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/');arrow::install_arrow(repos='https://nexus.ssb.no/repository/CRAN/', minimal = FALSE)" && \
 
 RUN R -e "remotes::install_github('statisticsnorway/Kostra')" && \
