@@ -2,10 +2,13 @@
 
 # CLI tool based on the CLI tool in DAPLA
 
+export CLI_NAME=$(basename $0)
+export VIRTUAL_ENVIRONMENT_ROOT_DIRECTORY="$HOME/virtual_environment_projects"
+
 if [ "$1" == "create" ]; then
     if [ $# -ne 2 ]; then
         echo "This command creates a directory in your home directory, installs jupyterlab kernel and install a virutal environment for Python"
-        echo "Exactly 2 arguments must be supplied to 'python-env', 'create' and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
+        echo "Exactly 2 arguments must be supplied to '$CLI_NAME', 'create' and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
         exit 1
     fi
     
@@ -27,8 +30,6 @@ if [ "$1" == "create" ]; then
             * ) echo "Please answer yes or no.";;
         esac
     done
-    
-    export VIRTUAL_ENVIRONMENT_ROOT_DIRECTORY="$HOME/virtual_environment_projects"
   
     # Setting up root project directory if it does not already exist
     if [ ! -e "$VIRTUAL_ENVIRONMENT_ROOT_DIRECTORY" ]; then 
@@ -98,23 +99,21 @@ if [ "$1" == "create" ]; then
      
      echo "---> Your project is located at: '$VIRTUAL_ENVIRONMENT_PROJECT_DIRECTORY' <---"
 
-     unset PROJECT_VIRTUAL_ENVIRONMENT
      exit 0
 
 elif [ "$1" == "delete" ]; then
     if [ $# -ne 2 ]; then
         echo "This command deletes virtual environment and kernel but allows the project-directory to stay so you don't lose any code"
-        echo "Exactly 2 arguments must be supplied to 'python-env', create and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
+        echo "Exactly 2 arguments must be supplied to '$CLI_NAME', create and the name of the project (must not contain spaces). The name of the project will also be the name of the kernel."
         echo "To only delete the kernel, but not the pipenv, run 'jupyter kernelspec uninstall project_name'."
 
         echo "Here is a list of your projects"
-        for directory in "$HOME/virtual_environment_projects"/*; do
+        for directory in "$VIRTUAL_ENVIRONMENT_ROOT_DIRECTORY"/*; do
             echo "- $(basename -- $directory)"
         done
         exit 1
     fi
     
-    export VIRTUAL_ENVIRONMENT_ROOT_DIRECTORY="$HOME/virtual_environment_projects"
     PROJECT_NAME=$2
     
     echo "WARNING: You are about to delete kernel and virutal environment named '$PROJECT_NAME', including Pipfile and Pipfile.lock in your project directory located at '$VIRTUAL_ENVIRONMENT_ROOT_DIRECTORY'"
@@ -149,6 +148,6 @@ elif [ "$1" == "delete" ]; then
     
     exit 0
 else
-  echo "'python-env' takes argument 'create', 'delete'. Try them without further arguments for more info about what they do."
+  echo "'$CLI_NAME' takes argument 'create', 'delete'. Try them without further arguments for more info about what they do."
   exit 1
 fi
