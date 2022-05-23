@@ -33,6 +33,8 @@ COPY r-packages.txt /tmp/r-packages.txt
 
 RUN apt update && \
     apt-get -y clean all && \
+
+RUN apt-get -y clean all && \
     apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y dist-upgrade && \
