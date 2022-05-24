@@ -168,6 +168,8 @@ RUN apt update && \
     apt-get -y install vim && \
     apt-get -y install nedit && \
     apt-get -y install jq && \
+    # installing texlive-full
+    apt-get -y install texlive-full && \
     # Installing bsdmainutils, helped solve colrm message after every command in the terminal
     apt-get install -y bsdmainutils && \
     apt autoremove -y && \
