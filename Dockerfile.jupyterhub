@@ -3,9 +3,9 @@
 ARG JUPYTERHUB_VERSION
 FROM nexus.ssb.no:8445/jupyterhub/jupyterhub:$JUPYTERHUB_VERSION
 
-# Installing realmd for AD-integrated user authentication
+# Installing sssd-tools (required for authentication)
 RUN apt-get update -qq && \
-    apt-get install sssd-tools -y
+    apt-get -y install sssd-tools
 
 # Installing jupyterhub packages
 RUN python3 -m pip install dockerspawner>=12.1.0 && \
