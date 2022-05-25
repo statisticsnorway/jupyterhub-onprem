@@ -88,7 +88,8 @@ RUN R CMD javareconf -e && \
     R -e "install.packages('languageserver', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
 
 RUN R -e "remotes::install_github('statisticsnorway/Kostra')" && \
-    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+    R -e "remotes::install_github('DiegoZardetto/ReGenesees')" && \
+    rm -rf /tmp/downloaded_packages/ /tmp/*.rds && \
 
 USER $NB_UID
 
