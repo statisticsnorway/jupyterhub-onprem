@@ -171,6 +171,8 @@ RUN apt update && \
     apt-get -y install vim && \
     # required for json parsing using bash
     apt-get -y install jq && \
+    # used to find and kill files user have open
+    apt-get -y install lsof && \
     # installing texlive-full
     apt-get -y install texlive-full && \
     # Installing bsdmainutils, helped solve colrm message after every command in the terminal
