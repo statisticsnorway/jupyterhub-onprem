@@ -202,6 +202,10 @@ RUN apt-get install -y libaio1 libaio-dev && \
 # add tnsnames.ora to oracle path
 RUN ln -s /ssb/share/etc/tnsnames.ora /usr/lib/oracle/21/client64/lib/network/tnsnames.ora
 
+# Set localtime to Europe/Oslo
+RUN rm -f /etc/localtime && \
+    ln -s /usr/share/zoneinfo/Europe/Oslo /etc/localtime
+
 # Allowing usage of stamme_variabler in the terminal
 # stamme_variabler is also useable in the kernels as
 # the file is sourced before the kernels start
