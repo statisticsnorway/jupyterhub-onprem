@@ -169,7 +169,6 @@ RUN apt update && \
     # alien is used to convert .rpms to .deb packages
     apt-get -y install alien && \
     apt-get -y install vim && \
-    apt-get -y install nedit && \
     apt-get -y install jq && \
     # installing texlive-full
     apt-get -y install texlive-full && \
