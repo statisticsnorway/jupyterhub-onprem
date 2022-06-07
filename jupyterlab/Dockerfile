@@ -198,6 +198,11 @@ RUN jupyter lab build --dev-build=False && \
 
 USER root
 
+# Installing quarto https://quarto.org/
+RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v0.9.533/quarto-0.9.533-linux-amd64.deb -P /tmp/ && \
+    dpkg -i /tmp/quarto-0.9.533-linux-amd64.deb && \
+    rm -rf /tmp/quarto-0.9.533-linux-amd64.deb
+
 RUN apt update && \
     apt-get -y install vim && \
     # required for json parsing using bash
