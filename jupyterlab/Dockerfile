@@ -51,6 +51,38 @@ RUN apt-get update -y && \
     apt-get install -y -V libparquet-glib-dev && \
     rm -rf /tmp/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
 
+# Downloading oracle instant-client components and saving to /tmp
+RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm -P /tmp/
+
+RUN apt update && \
+    # alien is used to convert .rpms to .deb packages
+    apt-get install -y alien && \
+    # libaio required by oracle 64-bit client
+    apt-get install -y libaio1 libaio-dev && \
+    apt autoremove -y && \
+    apt-get -y clean all
+
+# Installing oracle-instantclient components using alien
+RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm && \
+    alien -i /tmp/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm && \
+    rm -rf /tmp/oracle-instantclient-*
+
+# add tnsnames.ora to oracle path
+RUN ln -s /ssb/share/etc/tnsnames.ora /usr/lib/oracle/21/client64/lib/network/tnsnames.ora
+
+# required to build ROracle
+ENV OCI_INC /usr/include/oracle/21/client64
+ENV OCI_LIB /usr/lib/oracle/21/client64/lib
+
 RUN apt-get -y clean all && \
     apt-get -y update && \
     apt-get -y upgrade && \
@@ -166,8 +198,6 @@ RUN jupyter lab build --dev-build=False && \
 USER root
 
 RUN apt update && \
-    # alien is used to convert .rpms to .deb packages
-    apt-get -y install alien && \
     apt-get -y install vim && \
     # required for json parsing using bash
     apt-get -y install jq && \
@@ -179,31 +209,6 @@ RUN apt update && \
     apt-get install -y bsdmainutils && \
     apt autoremove -y && \
     apt-get -y clean all
-
-# Downloading oracle instant-client components and saving to /tmp
-RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
-    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
-    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
-    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
-    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
-    wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm -P /tmp/
-
-# Installing oracle-instantclient components using alien
-RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm && \
-    rm -rf /tmp/oracle-instantclient-*
-
-# libaio required by oracle 64-bit client
-RUN apt-get install -y libaio1 libaio-dev && \
-    apt autoremove -y && \
-    apt-get -y clean all
-
-# add tnsnames.ora to oracle path
-RUN ln -s /ssb/share/etc/tnsnames.ora /usr/lib/oracle/21/client64/lib/network/tnsnames.ora
 
 # Set localtime to Europe/Oslo
 RUN rm -f /etc/localtime && \

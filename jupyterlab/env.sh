@@ -24,6 +24,7 @@ export PIP_REQUIRE_VIRTUALENV=true
 
 # Setting up environment variables for oracle
 export OCI_INC=/usr/include/oracle/21/client64
+export OCI_LIB=/usr/lib/oracle/21/client64/lib
 export ORACLE_HOME=/usr/lib/oracle/21/client64
 export TNS_ADMIN=/usr/lib/oracle/21/client64/lib/network
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/21/client64/lib
