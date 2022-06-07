@@ -122,7 +122,7 @@ RUN R CMD javareconf -e && \
 
 RUN R -e "remotes::install_github('statisticsnorway/Kostra')" && \
     R -e "remotes::install_github('DiegoZardetto/ReGenesees')" && \
-    rm -rf /tmp/downloaded_packages/ /tmp/*.rds && \
+    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
 USER $NB_UID
 
@@ -204,6 +204,7 @@ RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v0.9.533/qua
     rm -rf /tmp/quarto-0.9.533-linux-amd64.deb
 
 RUN apt update && \
+    # vim support
     apt-get -y install vim && \
     # required for json parsing using bash
     apt-get -y install jq && \
