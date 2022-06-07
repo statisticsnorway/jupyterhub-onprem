@@ -118,6 +118,7 @@ RUN R CMD javareconf -e && \
     R -e "install.packages('arrow', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/');arrow::install_arrow(repos='https://nexus.ssb.no/repository/CRAN/', minimal = FALSE)" && \
     # Language server for R
     R -e "install.packages('languageserver', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('ROracle', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')"
 
 RUN R -e "remotes::install_github('statisticsnorway/Kostra')" && \
     R -e "remotes::install_github('DiegoZardetto/ReGenesees')" && \
