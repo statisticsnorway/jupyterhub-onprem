@@ -12,7 +12,7 @@ export FROM_ENVSH=true
 # Get all variables from stamme_variabel
 source /etc/profile.d/stamme_variabel
 
-export FELLES="/ssb/bruker/felles"
+export FELLES=/ssb/bruker/felles
 
 # Setting up environment variables for pip and pipenv
 # Pip config so users install from Nexus.
