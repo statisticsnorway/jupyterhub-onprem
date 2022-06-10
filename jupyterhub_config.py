@@ -45,8 +45,8 @@ c.DockerSpawner.extra_host_config = { "network_mode": network_name }
 
 # Memory limits
 # Documentation https://jupyterhub-dockerspawner.readthedocs.io/en/latest/api/index.html
-c.DockerSpawner.mem_guarantee = "1G"
-c.DockerSpawner.mem_limit = "2G"
+c.DockerSpawner.mem_guarantee = "2G"
+c.DockerSpawner.mem_limit = "5G"
 
 # Mounting /ssb/bruker from the jupyterhub container to the user container
 c.DockerSpawner.volumes = { 
