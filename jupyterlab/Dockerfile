@@ -124,6 +124,16 @@ RUN R -e "remotes::install_github('statisticsnorway/Kostra')" && \
     R -e "remotes::install_github('DiegoZardetto/ReGenesees')" && \
     rm -rf /tmp/downloaded_packages/ /tmp/*.rds
 
+# Installing struktuR manually for now, statisticsnorway/struktuR is an internal repo.
+# A solution is to create a token https://github.com/settings/tokens and
+# pass it along with install_github('statisticsnorway/struktuR', auth_token='MY_PRIVATE_TOKEN').
+# ggplot2 and Hmisc are dependencies of statisticsnorway/struktuR and must be installed first.
+COPY struktuR_0.1.4.tar.gz /tmp/struktuR_0.1.4.tar.gz
+RUN R -e "install.packages('ggplot2', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('Hmisc', dependencies=TRUE, repos='https://nexus.ssb.no/repository/CRAN/')" && \
+    R -e "install.packages('/tmp/struktuR_0.1.4.tar.gz', repos=NULL)" && \
+    rm -rf /tmp/struktuR*
+
 USER $NB_UID
 
 RUN echo "**** install jupyterlab-git ****" && \
