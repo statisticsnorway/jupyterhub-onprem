@@ -209,9 +209,11 @@ RUN jupyter lab build --dev-build=False && \
 USER root
 
 # Installing quarto https://quarto.org/
-RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v0.9.533/quarto-0.9.533-linux-amd64.deb -P /tmp/ && \
-    dpkg -i /tmp/quarto-0.9.533-linux-amd64.deb && \
-    rm -rf /tmp/quarto-0.9.533-linux-amd64.deb
+# not installing .deb file because some features don't work
+RUN wget https://github.com/quarto-dev/quarto-cli/releases/download/v0.9.580/quarto-0.9.580-linux-amd64.tar.gz -P /tmp/ && \
+    tar -zxf /tmp/quarto-0.9.580-linux-amd64.tar.gz -C /usr/local/ && \
+    ln -s /usr/local/quarto-0.9.580/bin/quarto /usr/local/bin/quarto && \
+    rm -rf /tmp/quarto-0.9.580-linux-amd64.tar.gz
 
 RUN apt update && \
     # vim support
