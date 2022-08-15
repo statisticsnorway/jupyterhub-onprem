@@ -239,15 +239,8 @@ RUN rm -f /etc/localtime && \
 RUN ln -s /ssb/share/etc/stamme_variabel /etc/profile.d/stamme_variabel
 
 # Copy the kernels. (pre-defined kernels are found at /opt/conda/share/jupyter/kernels)
-COPY kernels/ir/kernel.json /opt/conda/share/jupyter/kernels/ir/
-COPY kernels/ir/logo-64x64.png /opt/conda/share/jupyter/kernels/ir/
-COPY kernels/ir/Rstartup /opt/conda/share/jupyter/kernels/ir/
-COPY kernels/ir/r.sh /opt/conda/share/jupyter/kernels/ir/
-
-COPY kernels/python3/kernel.json /opt/conda/share/jupyter/kernels/python3/
-COPY kernels/python3/python.sh /opt/conda/share/jupyter/kernels/python3/
-COPY kernels/python3/logo-32x32.png /opt/conda/share/jupyter/kernels/python3/
-COPY kernels/python3/logo-64x64.png /opt/conda/share/jupyter/kernels/python3/
+COPY kernels/ir /opt/conda/share/jupyter/kernels/ir/
+COPY kernels/python3 /opt/conda/share/jupyter/kernels/python3/
 
 # Allowing everyone to execute python.sh and r.sh, this is done indirectly by users
 RUN chmod +x /opt/conda/share/jupyter/kernels/python3/python.sh
