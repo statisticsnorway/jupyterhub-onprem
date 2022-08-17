@@ -85,8 +85,8 @@ c.JupyterHub.hub_port = 8080
 
 # TLS config
 c.JupyterHub.port = 443
-c.JupyterHub.ssl_key = os.environ["SSL_KEY"]
-c.JupyterHub.ssl_cert = os.environ["SSL_CERT"]
+c.JupyterHub.ssl_key = "/srv/jupyterhub/secrets/starssb.key"
+c.JupyterHub.ssl_cert = "/srv/jupyterhub/secrets/certificates.pem"
 
 # Persist hub data on volume mounted inside container
 data_dir = os.environ.get("DATA_VOLUME_CONTAINER", "/data")

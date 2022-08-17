@@ -14,14 +14,3 @@ RUN python3 -m pip install dockerspawner>=12.1.0 && \
 
 # copy jupyterhub_config.py to container
 COPY jupyterhub_config.py /srv/jupyterhub
-
-# Copy SSL certificate and key
-ENV SSL_CERT /srv/jupyterhub/secrets/certificates.pem
-ENV SSL_KEY /srv/jupyterhub/secrets/starssb.key
-
-COPY ./secrets/*.pem $SSL_CERT
-COPY ./secrets/*.key $SSL_KEY
-
-RUN chmod 700 /srv/jupyterhub/secrets && \
-    chmod 600 /srv/jupyterhub/secrets/*
-
