@@ -25,7 +25,7 @@ else
 	cert_files=
 endif
 
-check-files:  ~/postgres.env
+check-files:  ~/secrets/postgres.env
 
 pull:
 	docker pull $(DOCKER_NOTEBOOK_IMAGE)
