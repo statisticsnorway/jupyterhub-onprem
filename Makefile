@@ -15,17 +15,17 @@ volumes:
 
 postgres-pw-gen:
 	@echo "Generating postgres password in $@"
-	@echo "POSTGRES_PASSWORD=$(shell openssl rand -hex 32)" > ~/secrets/postgres.env
+	@echo "POSTGRES_PASSWORD=$(shell openssl rand -hex 32)" > ~/secrets/postgres/postgres.env
 
 # Do not require cert/key files if SECRETS_VOLUME defined
 secrets_volume = $(shell echo $(SECRETS_VOLUME))
 ifeq ($(secrets_volume),)
-	cert_files=~/secrets/certificates.pem ~/secrets/starssb.key
+	cert_files=~/secrets/ssl/certificates.pem ~/secrets/ssl/starssb.key
 else
 	cert_files=
 endif
 
-check-files:  ~/secrets/postgres.env
+check-files:  ~/secrets/postgres/postgres.env
 
 pull:
 	docker pull $(DOCKER_NOTEBOOK_IMAGE)
