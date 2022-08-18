@@ -14,3 +14,6 @@ RUN python3 -m pip install dockerspawner>=12.1.0 && \
 
 # copy jupyterhub_config.py to container
 COPY jupyterhub_config.py /srv/jupyterhub
+
+ENV SSL_CERT /srv/jupyterhub/secrets/certificates.pem
+ENV SSL_KEY /srv/jupyterhub/secrets/starssb.key
