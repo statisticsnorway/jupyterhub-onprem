@@ -1,7 +1,7 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
-include .env
+include docker/jupyterhub/.env
 
 .DEFAULT_GOAL=build
 
@@ -30,13 +30,13 @@ check-files:  ~/secrets/postgres/postgres.env
 pull:
 	docker pull $(DOCKER_NOTEBOOK_IMAGE)
 
-notebook_image: pull jupyterlab/Dockerfile
+notebook_image: pull docker/jupyterlab/Dockerfile
 	docker build -t $(LOCAL_NOTEBOOK_IMAGE) \
 		--build-arg JUPYTERHUB_VERSION=$(JUPYTERHUB_VERSION) \
 		--build-arg DOCKER_NOTEBOOK_IMAGE=$(DOCKER_NOTEBOOK_IMAGE) \
 		jupyterlab
 
 build: check-files network volumes
-	docker-compose build
+	docker-compose -f docker/jupyterhub/docker-compose.yml build
 
 .PHONY: network volumes check-files pull notebook_image build
