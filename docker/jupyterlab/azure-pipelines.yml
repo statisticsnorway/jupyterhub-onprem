@@ -40,6 +40,8 @@ variables:
     value: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
   - name: Dockerfile
     value: 'docker/jupyterlab/Dockerfile'
+  - name: timeBetweenRetriesVulnerabilityScan
+    value: '15000'
 
 # Job which builds Docker image, pushes this to GCR and checks for any image vulnerabilities
 # NOTE: Sub-project pipelines are still running with the root working directory
