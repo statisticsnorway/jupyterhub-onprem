@@ -1,7 +1,6 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
-ARG JUPYTERHUB_VERSION
-FROM jupyterhub/jupyterhub:$JUPYTERHUB_VERSION
+FROM jupyterhub/jupyterhub:2.2.2
 
 # Installing sssd-tools (required for authentication)
 RUN apt-get update -qq && \
