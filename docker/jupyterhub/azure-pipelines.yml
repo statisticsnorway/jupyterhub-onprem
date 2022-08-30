@@ -19,6 +19,13 @@ schedules:
         - main
     always: true
 
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: statisticsnorway/azure-pipelines-templates
+      endpoint: statisticsnorway
+
 parameters:
     # The URL of the registry which will host the built Docker image.
   - name: imageHost
@@ -62,13 +69,6 @@ parameters:
     # Arguments to the docker build command
   - name: buildArguments
     default: ''
-
-resources:
-  repositories:
-    - repository: templates
-      type: github
-      name: statisticsnorway/azure-pipelines-templates
-      endpoint: statisticsnorway
 
 jobs:
   - job: dockerBuildAndDockerPush
