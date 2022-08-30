@@ -159,58 +159,59 @@ jobs:
           gcrImageName: ${{ variables.imageName }}
   
   - job: deployToStaging
-      pool:
-        name: jupyterhub-onprem-staging
-        demands:
-        - agent.name -equals sl-jupyterhub-staging
+    dependsOn: dockerBuildAndDockerPush
+    pool:
+      name: jupyterhub-onprem-staging
+      demands:
+      - agent.name -equals sl-jupyterhub-staging
 
-      steps:
-        - script: |
-            set -e
+    steps:
+      - script: |
+          set -e
             
-            IMAGE=${{ variables.imageNameNexus }}:latest
-            docker pull $IMAGE
+          IMAGE=${{ variables.imageNameNexus }}:latest
+          docker pull $IMAGE
 
-            REPO="$HOME/jupyterhub-onprem"
-            if [ -d "$REPO" ]
-            then
-                echo "repo $REPO exists."
-                cd $REPO
-                git pull
-            else
-                echo "repo $REPO does not exist locally, cloning it."
-                git clone https://github.com/statisticsnorway/jupyterhub-onprem.git $REPO
+          REPO="$HOME/jupyterhub-onprem"
+          if [ -d "$REPO" ]
+          then
+              echo "repo $REPO exists."
+              cd $REPO
+              git pull
+          else
+              echo "repo $REPO does not exist locally, cloning it."
+              git clone https://github.com/statisticsnorway/jupyterhub-onprem.git $REPO
 
-                echo "creating necessary directories for ssl and postgres assuming they don't already exist"
-                mkdir -p $HOME/secrets/ssl
-                mkdir -p $HOME/secrets/postgres
+              echo "creating necessary directories for ssl and postgres assuming they don't already exist"
+              mkdir -p $HOME/secrets/ssl
+              mkdir -p $HOME/secrets/postgres
 
-                cd $REPO
+              cd $REPO
                 
-                echo "creating docker network for jupyterhub"
-                make network
+              echo "creating docker network for jupyterhub"
+              make network
                 
-                echo "creating docker volumes for jupyterhub"
-                make volumes
+              echo "creating docker volumes for jupyterhub"
+              make volumes
 
-                echo "creating postgresql secret for jupyterhub"
-                make postgres-pw-gen
+              echo "creating postgresql secret for jupyterhub"
+              make postgres-pw-gen
 
-            fi
+          fi
             
-            SERVICE_FILE=/etc/systemd/system/jupyterhub.service
-            if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
-                echo "Service files are the same, restarting service."
-                sudo systemctl restart jupyterhub.service
-            else
-                echo "Service file $SERVICE_FILE does not exist or is not equal to the recently pulled one."
-                sudo cp "$REPO/docker/jupyterhub/jupyterhub.service" "/etc/systemd/system/"
+          SERVICE_FILE=/etc/systemd/system/jupyterhub.service
+          if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
+              echo "Service files are the same, restarting service."
+              sudo systemctl restart jupyterhub.service
+          else
+              echo "Service file $SERVICE_FILE does not exist or is not equal to the recently pulled one."
+              sudo cp "$REPO/docker/jupyterhub/jupyterhub.service" "/etc/systemd/system/"
 
-                echo "enabling service."
-                sudo systemctl enable jupyterhub.service
+              echo "enabling service."
+              sudo systemctl enable jupyterhub.service
 
-                echo "starting service."
-                sudo systemctl start jupyterhub.service
-            fi
-          displayName: "Deploying to staging"
-          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+              echo "starting service."
+              sudo systemctl start jupyterhub.service
+          fi
+        displayName: "Deploying to staging"
+        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))

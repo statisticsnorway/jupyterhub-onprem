@@ -75,6 +75,7 @@ jobs:
       gcrImageName: ${{ variables.imageName }}
 
   - job: deployToStaging
+    dependsOn: dockerBuildAndDockerPush
     pool:
       name: jupyterhub-onprem-staging
       demands:
