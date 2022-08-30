@@ -161,10 +161,10 @@ jobs:
     # with the git tag, and pushes that back to GCR.
     # The job triggers when any tag was committed to GitHub, which means all tags in
     # the code repo are propagated to the corresponding (newly built) image in GCR.
-    - template: docker/docker-tag-for-production.yml@templates
-      parameters:
-        tagToTag: 'latest'
-        gcrImageName: ${{ variables.imageName }}
+  - template: docker/docker-tag-for-production.yml@templates
+    parameters:
+      tagToTag: 'latest'
+      gcrImageName: ${{ variables.imageName }}
   
   - job: deployToStaging
     dependsOn: dockerBuildAndDockerPush
