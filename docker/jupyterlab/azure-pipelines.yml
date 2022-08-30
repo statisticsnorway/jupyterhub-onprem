@@ -34,6 +34,8 @@ pool:
 variables:
   - name: imageName
     value: 'eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterlab-onprem'
+  - name: imageNameNexus
+    value: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
   - name: repoName
     value: 'prod-bip/ssb/statistikktjenester/jupyterlab-onprem'
   - name: imageTagAfterVulnerabilityScan
@@ -84,7 +86,7 @@ jobs:
     steps:
       - script: |
           set -e
-            
+          
           IMAGE=${{ variables.imageNameNexus }}:latest
           docker pull $IMAGE
 
