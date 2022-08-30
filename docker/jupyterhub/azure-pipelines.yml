@@ -62,6 +62,14 @@ parameters:
     # Arguments to the docker build command
   - name: buildArguments
     default: ''
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: statisticsnorway/azure-pipelines-templates
+      endpoint: statisticsnorway
+
 jobs:
   - job: dockerBuildAndDockerPush
     pool:
