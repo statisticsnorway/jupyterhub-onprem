@@ -8,8 +8,8 @@ trigger:
    include:
     - '*'
   paths:
-    include:
-      - docker/jupyterhub
+    exclude:
+      - docker/jupyterlab
 
 schedules:
   - cron: "0 12 1 * *"
