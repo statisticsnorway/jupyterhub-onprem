@@ -8,8 +8,8 @@ trigger:
    include:
     - '*'
   paths:
-    exclude:
-      - docker/jupyterhub
+    include:
+      - docker/jupyterlab
 
 schedules:
   - cron: "0 12 1 * *"
@@ -73,3 +73,20 @@ jobs:
     parameters:
       tagToTag: 'latest'
       gcrImageName: ${{ variables.imageName }}
+
+  - job: deployToStaging
+    dependsOn: dockerBuildAndDockerPush
+    pool:
+      name: jupyterhub-onprem-staging
+      demands:
+      - agent.name -equals sl-jupyterhub-staging
+
+    steps:
+      - script: |
+          set -e
+            
+          IMAGE=${{ variables.imageNameNexus }}:latest
+          docker pull $IMAGE
+
+        displayName: "Deploying to staging"
+        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))

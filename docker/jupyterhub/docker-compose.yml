@@ -7,23 +7,18 @@ services:
     container_name: jupyterhub-db
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      PGDATA: ${DB_VOLUME_CONTAINER}
+      POSTGRES_DB: jupyterhub
+      PGDATA: /var/lib/postgresql/data
     env_file:
       - ~/secrets/postgres/postgres.env
     volumes:
-      - "db:${DB_VOLUME_CONTAINER}"
+      - "db:/var/lib/postgresql/data"
 
   hub:
     depends_on:
       - hub-db
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        JUPYTERHUB_VERSION: ${JUPYTERHUB_VERSION}
     restart: always
-    image: jupyterhub
+    image: nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem:latest
     container_name: jupyterhub
     volumes:
       # Bind Docker socket on the host so we can connect to the daemon from
@@ -31,7 +26,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
 
       # Bind Docker volume on host for JupyterHub database and cookie secrets
-      - "data:${DATA_VOLUME_CONTAINER}"
+      - "data:/data"
       
         # Mounting ssb nfs shares
       - "/ssb:/ssb"
@@ -48,13 +43,13 @@ services:
       - hub-db
     environment:
       # All containers will join this network
-      DOCKER_NETWORK_NAME: ${DOCKER_NETWORK_NAME}
+      DOCKER_NETWORK_NAME: jupyterhub-network
       # JupyterHub will spawn this Notebook image for users
-      DOCKER_NOTEBOOK_IMAGE: ${LOCAL_NOTEBOOK_IMAGE}
+      DOCKER_NOTEBOOK_IMAGE: nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterlab-onprem:latest
       # Using this run command (optional)
-      DOCKER_SPAWN_CMD: ${DOCKER_SPAWN_CMD}
+      DOCKER_SPAWN_CMD: start-singleuser.sh
       # Postgres db info
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: jupyterhub
       POSTGRES_HOST: hub-db
     env_file:
       - ~/secrets/postgres/postgres.env
@@ -63,12 +58,12 @@ services:
 volumes:
   data:
     external:
-      name: ${DATA_VOLUME_HOST}
+      name: jupyterhub-data
   db:
     external:
-      name: ${DB_VOLUME_HOST}
+      name: jupyterhub-db-data
 
 networks:
   default:
     external:
-      name: ${DOCKER_NETWORK_NAME}
+      name: jupyterhub-network
