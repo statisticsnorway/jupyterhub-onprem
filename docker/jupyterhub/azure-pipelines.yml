@@ -8,8 +8,8 @@ trigger:
    include:
     - '*'
   paths:
-    exclude:
-      - docker/jupyterlab
+    include:
+      - docker/jupyterhub
 
 schedules:
   - cron: "0 12 1 * *"
@@ -180,9 +180,24 @@ jobs:
             else
                 echo "repo $REPO does not exist locally, cloning it."
                 git clone https://github.com/statisticsnorway/jupyterhub-onprem.git $REPO
+
+                echo "creating necessary directories for ssl and postgres assuming they don't already exist"
+                mkdir -p $HOME/secrets/ssl
+                mkdir -p $HOME/secrets/postgres
+
+                cd $REPO
+                
+                echo "creating docker network for jupyterhub"
+                make network
+                
+                echo "creating docker volumes for jupyterhub"
+                make volumes
+
+                echo "creating postgresql secret for jupyterhub"
+                make postgres-pw-gen
+
             fi
             
-
             SERVICE_FILE=/etc/systemd/system/jupyterhub.service
             if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
                 echo "Service files are the same, restarting service."
