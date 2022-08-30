@@ -19,55 +19,183 @@ schedules:
         - main
     always: true
 
-resources:
-  repositories:
-    - repository: templates
-      type: github
-      name: statisticsnorway/azure-pipelines-templates
-      endpoint: statisticsnorway
+parameters:
+    # The URL of the registry which will host the built Docker image.
+  - name: imageHost
+    default: 'https://eu.gcr.io/'
 
-pool:
-  vmImage: 'ubuntu-latest'
-
-# Variables global to this pipeline
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
-variables:
+    # Mandatory
+    # The fully qualified name of the Docker image e.g. eu.gcr.io/prod-bip/ssb/stratus/am-hello-world
   - name: imageName
-    value: 'eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
-  - name: repoName
-    value: 'prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
-  - name: imageTagAfterVulnerabilityScan
-    value: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
-  - name: Dockerfile
-    value: 'docker/jupyterhub/Dockerfile'
+    default: 'eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
 
-# Job which builds Docker image, pushes this to GCR and checks for any image vulnerabilities
-# NOTE: Sub-project pipelines are still running with the root working directory
+  - name: imageNameNexus
+    default: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
+
+    # Mandatory
+    # The fully qualified name of the image repository e.g. prod-bip/ssb/stratus/am-hello-world
+  - name: repoName
+    default: 'prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
+
+    # This should be left as default for most cases. Override if you have a particular reason.
+  - name: imageTagBeforeVulnerabilityScan
+    default: 'imagescan-$(Build.SourceBranchName)-$(Build.SourceVersion)'
+
+    # This should be left as default for most cases. Override if you have a particular reason.
+  - name: imageTagAfterVulnerabilityScan
+    default: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
+
+    # This should be left as default for most cases. Override if you have a particular reason.
+  - name: timeBetweenRetriesVulnerabilityScan
+    default: '15000'
+
+    # It's unusual to have a Dockerfile named anything else. This may be overridden for those unusual cases.
+  - name: Dockerfile
+    default: 'docker/jupyterhub/Dockerfile'
+
+  - name: gcrServiceConnection
+    default: 'gcrServiceConnection'
+
+  - name: onPremise
+    default: false
+
+    # Arguments to the docker build command
+  - name: buildArguments
+    default: ''
 jobs:
   - job: dockerBuildAndDockerPush
+    pool:
+      vmImage: 'ubuntu-latest'
     timeoutInMinutes: 150
-    displayName: 'Build jupyterlab-onprem image for dapla'
     steps:
-      - template: docker/docker-build-image-and-push-to-gcr.yml@templates
-        parameters:
-          imageName: $(imageName)
-          repoName: $(repoName)
-          Dockerfile: $(DockerFile)
+      - bash: |
+          if [ -z "$REPONAME" ]; then
+            echo "##vso[task.logissue type=error;]Missing template parameter \"repoName\""
+            echo "##vso[task.complete result=Failed;]"
+          fi
+        env:
+          REPONAME: ${{ parameters.repoName }}
+        displayName: 'Check for required parameters'
+      # Authenticate Docker to GCR using predefined service connection
+      - task: Docker@2
+        displayName: 'Login to GCR'
+        inputs:
+          command: login
+          containerRegistry: ${{ parameters.gcrServiceConnection }}
+
+      # Build Docker image
+      - task: Docker@2
+        displayName: 'Docker build'
+        inputs:
+          repository: ${{ parameters.repoName }}
+          command: 'build'
+          arguments: ${{ parameters.buildArguments }}
+          Dockerfile: ${{ parameters.Dockerfile }}
+          tags: |
+            ${{ parameters.imageTagBeforeVulnerabilityScan }}
+      # Push Docker Image to GCR
+      - task: Docker@2
+        displayName: 'Push image'
+        inputs:
+          containerRegistry: |
+            ${{ parameters.gcrServiceConnection }}
+          repository: ${{ parameters.repoName }}
+          command: 'push'
+          tags: |
+            ${{ parameters.imageTagBeforeVulnerabilityScan }}
+      # Download file with json-key to GCR as a later task needs to
+      # authenticate in a different way than using service connection
+      # File is stored in Pipelines->Library->Secure Files
+      - task: DownloadSecureFile@1
+        name: gcrJsonKey
+        displayName: 'Download gcr creds'
+        inputs:
+          secureFile: 'gcr-key.json'
+
+      # Set env variable pointing to the file downloaded in previous task
+      # as a library in next task needs this env variable
+      - script: |
+          echo "Setting env variable GOOGLE_APPLICATION_CREDENTIALS"
+          echo "##vso[task.setvariable variable=GOOGLE_APPLICATION_CREDENTIALS]$(gcrJsonKey.secureFilePath)"
+        displayName: 'Setting GOOGLE_APPLICATION_CREDENTIALS env variable'
+
+      # Wait for scan on image in GCR to complete and check for any vulnerabilities
+      # with effective severity HIGH or CRITICAL
+      #- task: gcr-vulneralbility-check@1
+      #  displayName: 'Image vulnerability check'
+      #  inputs:
+      #    projectId: 'prod-bip'
+      #    imageHost: ${{ parameters.imageHost }}
+      #   image: ${{ parameters.repoName }}
+      #    imageTag: ${{ parameters.imageTagBeforeVulnerabilityScan }}
+      #    timeBetweenRetries: ${{ parameters.timeBetweenRetriesVulnerabilityScan }}
+
+      - script: |
+          TAG=`git describe --tags`
+          echo $TAG
+          cat $(gcrJsonKey.secureFilePath) | docker login -u _json_key --password-stdin ${{ parameters.imageHost }}
+          docker pull ${{ parameters.imageName }}:${{ parameters.imageTagBeforeVulnerabilityScan }}
+          docker tag ${{ parameters.imageName }}:${{ parameters.imageTagBeforeVulnerabilityScan }} ${{ parameters.imageName }}:${{ parameters.imageTagAfterVulnerabilityScan }}
+          docker push ${{ parameters.imageName }}:${{ parameters.imageTagAfterVulnerabilityScan }}
+        displayName: "Retagging docker image if successful vulnerability scan"
+        condition: succeeded()
 
       # Need to tag 'latest' image (used by docker-tag-for-production)
       - script: |
           cat $(gcrJsonKey.secureFilePath) | docker login -u _json_key --password-stdin ${{ variables.imageHost }}
-          docker pull ${{ variables.imageName }}:imagescan-${{ variables.imageTagAfterVulnerabilityScan }}
-          docker tag ${{ variables.imageName }}:imagescan-${{ variables.imageTagAfterVulnerabilityScan }} ${{ variables.imageName }}:latest
+          docker pull ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }}
+          docker tag ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }} ${{ variables.imageName }}:latest
           docker push ${{ variables.imageName }}:latest
         displayName: "Retagging latest image"
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      
+      # Job which pulls the Docker image with the 'latest' tag from GCR, tags this
+      # with the git tag, and pushes that back to GCR.
+      # The job triggers when any tag was committed to GitHub, which means all tags in
+      # the code repo are propagated to the corresponding (newly built) image in GCR.
+      - template: docker/docker-tag-for-production.yml@templates
+        parameters:
+          tagToTag: 'latest'
+          gcrImageName: ${{ variables.imageName }}
+  
+  - job: deployToStaging
+      pool:
+        name: jupyterhub-onprem-staging
+        demands:
+        - agent.name -equals sl-jupyterhub-staging
 
-  # Job which pulls the Docker image with the 'latest' tag from GCR, tags this
-  # with the git tag, and pushes that back to GCR.
-  # The job triggers when any tag was committed to GitHub, which means all tags in
-  # the code repo are propagated to the corresponding (newly built) image in GCR.
-  - template: docker/docker-tag-for-production.yml@templates
-    parameters:
-      tagToTag: 'latest'
-      gcrImageName: ${{ variables.imageName }}
+      steps:
+        - script: |
+            set -e
+            
+            IMAGE=${{ variables.imageNameNexus }}:latest
+            docker pull $IMAGE
+
+            REPO="$HOME/jupyterhub-onprem"
+            if [ -d "$REPO" ]
+            then
+                echo "repo $REPO exists."
+                cd $REPO
+                git pull
+            else
+                echo "repo $REPO does not exist locally, cloning it."
+                git clone https://github.com/statisticsnorway/jupyterhub-onprem.git $REPO
+            fi
+            
+
+            SERVICE_FILE=/etc/systemd/system/jupyterhub.service
+            if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
+                echo "Service files are the same, restarting service."
+                sudo systemctl restart jupyterhub.service
+            else
+                echo "Service file $SERVICE_FILE does not exist or is not equal to the recently pulled one."
+                sudo cp "$REPO/docker/jupyterhub/jupyterhub.service" "/etc/systemd/system/"
+
+                echo "enabling service."
+                sudo systemctl enable jupyterhub.service
+
+                echo "starting service."
+                sudo systemctl start jupyterhub.service
+            fi
+          displayName: "Deploying to staging"
+          condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
