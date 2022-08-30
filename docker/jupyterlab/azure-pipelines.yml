@@ -88,6 +88,7 @@ jobs:
           set -e
           
           IMAGE=${{ variables.imageNameNexus }}:latest
+          echo "Pulling $IMAGE"
           docker pull $IMAGE
 
         displayName: "Deploying to staging"
