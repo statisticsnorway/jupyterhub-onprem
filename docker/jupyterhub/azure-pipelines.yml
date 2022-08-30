@@ -163,8 +163,8 @@ jobs:
           echo $isTrue
           if [$onPremise = $isTrue]; then
             echo "start tagging"
-            docker tag ${{ parameters.imageName }}:${{ parameters.imageTagAfterVulnerabilityScan }} ${{ parameters.imageName }}:deploy-to-test
-            docker push ${{ parameters.imageName }}:deploy-to-test
+            docker tag ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }} ${{ variables.imageName }}:deploy-to-test
+            docker push ${{ variables.imageName }}:deploy-to-test
             echo "start tagging"
           fi
         displayName: "Adding tag deploy-to-test since branch is main"
