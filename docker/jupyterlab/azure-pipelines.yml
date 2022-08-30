@@ -35,7 +35,7 @@ variables:
   - name: imageName
     value: 'eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterlab-onprem'
   - name: imageNameNexus
-    value: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
+    value: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterlab-onprem'
   - name: repoName
     value: 'prod-bip/ssb/statistikktjenester/jupyterlab-onprem'
   - name: imageTagAfterVulnerabilityScan
