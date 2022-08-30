@@ -26,49 +26,46 @@ resources:
       name: statisticsnorway/azure-pipelines-templates
       endpoint: statisticsnorway
 
-parameters:
+variables:
     # The URL of the registry which will host the built Docker image.
   - name: imageHost
-    default: 'https://eu.gcr.io/'
+    value: 'https://eu.gcr.io/'
 
     # Mandatory
     # The fully qualified name of the Docker image e.g. eu.gcr.io/prod-bip/ssb/stratus/am-hello-world
   - name: imageName
-    default: 'eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
+    value: 'eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
 
   - name: imageNameNexus
-    default: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
+    value: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
 
     # Mandatory
     # The fully qualified name of the image repository e.g. prod-bip/ssb/stratus/am-hello-world
   - name: repoName
-    default: 'prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
+    value: 'prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
 
     # This should be left as default for most cases. Override if you have a particular reason.
   - name: imageTagBeforeVulnerabilityScan
-    default: 'imagescan-$(Build.SourceBranchName)-$(Build.SourceVersion)'
+    value: 'imagescan-$(Build.SourceBranchName)-$(Build.SourceVersion)'
 
     # This should be left as default for most cases. Override if you have a particular reason.
   - name: imageTagAfterVulnerabilityScan
-    default: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
+    value: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
 
     # This should be left as default for most cases. Override if you have a particular reason.
   - name: timeBetweenRetriesVulnerabilityScan
-    default: '15000'
+    value: '15000'
 
     # It's unusual to have a Dockerfile named anything else. This may be overridden for those unusual cases.
   - name: Dockerfile
-    default: 'docker/jupyterhub/Dockerfile'
+    value: 'docker/jupyterhub/Dockerfile'
 
   - name: gcrServiceConnection
-    default: 'gcrServiceConnection'
-
-  - name: onPremise
-    default: false
+    value: 'gcrServiceConnection'
 
     # Arguments to the docker build command
   - name: buildArguments
-    default: ''
+    value: ''
 
 jobs:
   - job: dockerBuildAndDockerPush
@@ -82,35 +79,35 @@ jobs:
             echo "##vso[task.complete result=Failed;]"
           fi
         env:
-          REPONAME: ${{ parameters.repoName }}
+          REPONAME: ${{ variables.repoName }}
         displayName: 'Check for required parameters'
       # Authenticate Docker to GCR using predefined service connection
       - task: Docker@2
         displayName: 'Login to GCR'
         inputs:
           command: login
-          containerRegistry: ${{ parameters.gcrServiceConnection }}
+          containerRegistry: ${{ variables.gcrServiceConnection }}
 
       # Build Docker image
       - task: Docker@2
         displayName: 'Docker build'
         inputs:
-          repository: ${{ parameters.repoName }}
+          repository: ${{ variables.repoName }}
           command: 'build'
-          arguments: ${{ parameters.buildArguments }}
-          Dockerfile: ${{ parameters.Dockerfile }}
+          arguments: ${{ variables.buildArguments }}
+          Dockerfile: ${{ variables.Dockerfile }}
           tags: |
-            ${{ parameters.imageTagBeforeVulnerabilityScan }}
+            ${{ variables.imageTagBeforeVulnerabilityScan }}
       # Push Docker Image to GCR
       - task: Docker@2
         displayName: 'Push image'
         inputs:
           containerRegistry: |
-            ${{ parameters.gcrServiceConnection }}
-          repository: ${{ parameters.repoName }}
+            ${{ variables.gcrServiceConnection }}
+          repository: ${{ variables.repoName }}
           command: 'push'
           tags: |
-            ${{ parameters.imageTagBeforeVulnerabilityScan }}
+            ${{ variables.imageTagBeforeVulnerabilityScan }}
       # Download file with json-key to GCR as a later task needs to
       # authenticate in a different way than using service connection
       # File is stored in Pipelines->Library->Secure Files
@@ -133,18 +130,18 @@ jobs:
       #  displayName: 'Image vulnerability check'
       #  inputs:
       #    projectId: 'prod-bip'
-      #    imageHost: ${{ parameters.imageHost }}
-      #   image: ${{ parameters.repoName }}
-      #    imageTag: ${{ parameters.imageTagBeforeVulnerabilityScan }}
-      #    timeBetweenRetries: ${{ parameters.timeBetweenRetriesVulnerabilityScan }}
+      #    imageHost: ${{ variables.imageHost }}
+      #   image: ${{ variables.repoName }}
+      #    imageTag: ${{ variables.imageTagBeforeVulnerabilityScan }}
+      #    timeBetweenRetries: ${{ variables.timeBetweenRetriesVulnerabilityScan }}
 
       - script: |
           TAG=`git describe --tags`
           echo $TAG
-          cat $(gcrJsonKey.secureFilePath) | docker login -u _json_key --password-stdin ${{ parameters.imageHost }}
-          docker pull ${{ parameters.imageName }}:${{ parameters.imageTagBeforeVulnerabilityScan }}
-          docker tag ${{ parameters.imageName }}:${{ parameters.imageTagBeforeVulnerabilityScan }} ${{ parameters.imageName }}:${{ parameters.imageTagAfterVulnerabilityScan }}
-          docker push ${{ parameters.imageName }}:${{ parameters.imageTagAfterVulnerabilityScan }}
+          cat $(gcrJsonKey.secureFilePath) | docker login -u _json_key --password-stdin ${{ variables.imageHost }}
+          docker pull ${{ variables.imageName }}:${{ variables.imageTagBeforeVulnerabilityScan }}
+          docker tag ${{ variables.imageName }}:${{ variables.imageTagBeforeVulnerabilityScan }} ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }}
+          docker push ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }}
         displayName: "Retagging docker image if successful vulnerability scan"
         condition: succeeded()
 
