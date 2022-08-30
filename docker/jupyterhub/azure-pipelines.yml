@@ -153,7 +153,23 @@ jobs:
           docker push ${{ variables.imageName }}:latest
         displayName: "Retagging latest image"
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-      
+        
+      - script: |
+          TAG=`git describe --tags`
+          echo $TAG
+          onPremise = "true"
+          echo $onPremise
+          isTrue = "true"
+          echo $isTrue
+          if [$onPremise = $isTrue]; then
+            echo "start tagging"
+            docker tag ${{ parameters.imageName }}:${{ parameters.imageTagAfterVulnerabilityScan }} ${{ parameters.imageName }}:deploy-to-test
+            docker push ${{ parameters.imageName }}:deploy-to-test
+            echo "start tagging"
+          fi
+        displayName: "Adding tag deploy-to-test since branch is main"
+        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
+        
     # Job which pulls the Docker image with the 'latest' tag from GCR, tags this
     # with the git tag, and pushes that back to GCR.
     # The job triggers when any tag was committed to GitHub, which means all tags in
