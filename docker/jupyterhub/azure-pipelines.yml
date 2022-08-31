@@ -27,10 +27,6 @@ resources:
       endpoint: statisticsnorway
 
 variables:
-    # The URL of the registry which will host the built Docker image.
-  - name: imageHost
-    value: 'https://eu.gcr.io/'
-
     # Mandatory
     # The fully qualified name of the Docker image e.g. eu.gcr.io/prod-bip/ssb/stratus/am-hello-world
   - name: imageName
@@ -45,14 +41,6 @@ variables:
     value: 'prod-bip/ssb/statistikktjenester/jupyterhub-onprem'
 
     # This should be left as default for most cases. Override if you have a particular reason.
-  - name: imageTagBeforeVulnerabilityScan
-    value: 'imagescan-$(Build.SourceBranchName)-$(Build.SourceVersion)'
-
-    # This should be left as default for most cases. Override if you have a particular reason.
-  - name: imageTagAfterVulnerabilityScan
-    value: '$(Build.SourceBranchName)-$(Build.SourceVersion)'
-
-    # This should be left as default for most cases. Override if you have a particular reason.
   - name: timeBetweenRetriesVulnerabilityScan
     value: '15000'
 
@@ -60,116 +48,28 @@ variables:
   - name: Dockerfile
     value: 'docker/jupyterhub/Dockerfile'
 
-  - name: gcrServiceConnection
-    value: 'gcrServiceConnection'
-
-    # Arguments to the docker build command
-  - name: buildArguments
-    value: ''
-
 jobs:
   - job: dockerBuildAndDockerPush
+    timeoutInMinutes: 150
     pool:
       vmImage: 'ubuntu-latest'
-    timeoutInMinutes: 150
     steps:
-      - bash: |
-          if [ -z "$REPONAME" ]; then
-            echo "##vso[task.logissue type=error;]Missing template parameter \"repoName\""
-            echo "##vso[task.complete result=Failed;]"
-          fi
-        env:
-          REPONAME: ${{ variables.repoName }}
-        displayName: 'Check for required parameters'
-      # Authenticate Docker to GCR using predefined service connection
-      - task: Docker@2
-        displayName: 'Login to GCR'
-        inputs:
-          command: login
-          containerRegistry: ${{ variables.gcrServiceConnection }}
-
-      # Build Docker image
-      - task: Docker@2
-        displayName: 'Docker build'
-        inputs:
-          repository: ${{ variables.repoName }}
-          command: 'build'
-          arguments: ${{ variables.buildArguments }}
-          Dockerfile: ${{ variables.Dockerfile }}
-          tags: |
-            ${{ variables.imageTagBeforeVulnerabilityScan }}
-      # Push Docker Image to GCR
-      - task: Docker@2
-        displayName: 'Push image'
-        inputs:
-          containerRegistry: |
-            ${{ variables.gcrServiceConnection }}
-          repository: ${{ variables.repoName }}
-          command: 'push'
-          tags: |
-            ${{ variables.imageTagBeforeVulnerabilityScan }}
-      # Download file with json-key to GCR as a later task needs to
-      # authenticate in a different way than using service connection
-      # File is stored in Pipelines->Library->Secure Files
-      - task: DownloadSecureFile@1
-        name: gcrJsonKey
-        displayName: 'Download gcr creds'
-        inputs:
-          secureFile: 'gcr-key.json'
-
-      # Set env variable pointing to the file downloaded in previous task
-      # as a library in next task needs this env variable
-      - script: |
-          echo "Setting env variable GOOGLE_APPLICATION_CREDENTIALS"
-          echo "##vso[task.setvariable variable=GOOGLE_APPLICATION_CREDENTIALS]$(gcrJsonKey.secureFilePath)"
-        displayName: 'Setting GOOGLE_APPLICATION_CREDENTIALS env variable'
-
-      # Wait for scan on image in GCR to complete and check for any vulnerabilities
-      # with effective severity HIGH or CRITICAL
-      #- task: gcr-vulneralbility-check@1
-      #  displayName: 'Image vulnerability check'
-      #  inputs:
-      #    projectId: 'prod-bip'
-      #    imageHost: ${{ variables.imageHost }}
-      #   image: ${{ variables.repoName }}
-      #    imageTag: ${{ variables.imageTagBeforeVulnerabilityScan }}
-      #    timeBetweenRetries: ${{ variables.timeBetweenRetriesVulnerabilityScan }}
-
-      - script: |
-          TAG=`git describe --tags`
-          echo $TAG
-          cat $(gcrJsonKey.secureFilePath) | docker login -u _json_key --password-stdin ${{ variables.imageHost }}
-          docker pull ${{ variables.imageName }}:${{ variables.imageTagBeforeVulnerabilityScan }}
-          docker tag ${{ variables.imageName }}:${{ variables.imageTagBeforeVulnerabilityScan }} ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }}
-          docker push ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }}
-        displayName: "Retagging docker image if successful vulnerability scan"
-        condition: succeeded()
+      - template: docker/docker-build-image-and-push-to-gcr.yml@templates
+        parameters:
+          imageName: $(imageName)
+          repoName: $(repoName)
+          Dockerfile: $(DockerFile)
+          timeBetweenRetriesVulnerabilityScan: $(timeBetweenRetriesVulnerabilityScan)
 
       # Need to tag 'latest' image (used by docker-tag-for-production)
       - script: |
           cat $(gcrJsonKey.secureFilePath) | docker login -u _json_key --password-stdin ${{ variables.imageHost }}
-          docker pull ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }}
-          docker tag ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }} ${{ variables.imageName }}:latest
+          docker pull ${{ variables.imageName }}:imagescan-${{ variables.imageTagAfterVulnerabilityScan }}
+          docker tag ${{ variables.imageName }}:imagescan-${{ variables.imageTagAfterVulnerabilityScan }} ${{ variables.imageName }}:latest
           docker push ${{ variables.imageName }}:latest
         displayName: "Retagging latest image"
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-        
-      - script: |
-          TAG=`git describe --tags`
-          echo $TAG
-          onPremise = "true"
-          echo $onPremise
-          isTrue = "true"
-          echo $isTrue
-          if [$onPremise = $isTrue]; then
-            echo "start tagging"
-            docker tag ${{ variables.imageName }}:${{ variables.imageTagAfterVulnerabilityScan }} ${{ variables.imageName }}:deploy-to-test
-            docker push ${{ variables.imageName }}:deploy-to-test
-            echo "start tagging"
-          fi
-        displayName: "Adding tag deploy-to-test since branch is main"
-        condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/main'))
-        
+
     # Job which pulls the Docker image with the 'latest' tag from GCR, tags this
     # with the git tag, and pushes that back to GCR.
     # The job triggers when any tag was committed to GitHub, which means all tags in
