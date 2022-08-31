@@ -2,8 +2,13 @@
 # Distributed under the terms of the Modified BSD License.
 FROM jupyterhub/jupyterhub:2.2.2
 
-# Installing sssd-tools (required for authentication)
-RUN apt-get update -qq && \
+# Update distro to apply security fixes
+RUN apt update && \
+    apt-get -y clean all && \
+    apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get -y dist-upgrade && \
+    # # Installing sssd-tools (required for authentication)
     apt-get -y install sssd-tools
 
 # Installing jupyterhub packages
