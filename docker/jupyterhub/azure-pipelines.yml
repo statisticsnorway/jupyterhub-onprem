@@ -182,7 +182,7 @@ jobs:
           git fetch --tags
           TAG=`git describe --tags`
           echo "Found tag $TAG"
-          echo DOCKER_NOTEBOOK_IMAGE=nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterlab-onprem:$TAG > docker/jupyterhub/.env
+          printf "DOCKER_NOTEBOOK_IMAGE=nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterlab-onprem:$TAG\nDOCKER_HUB_IMAGE=nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem:$TAG" > docker/jupyterhub/.env
           
           IMAGE=${{ variables.imageNameNexus }}:$TAG
           echo "Pulling $IMAGE"
