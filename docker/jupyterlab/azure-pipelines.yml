@@ -43,7 +43,7 @@ variables:
   - name: Dockerfile
     value: 'docker/jupyterlab/Dockerfile'
   - name: timeBetweenRetriesVulnerabilityScan
-    value: '15000'
+    value: '30000'
 
 # Job which builds Docker image, pushes this to GCR and checks for any image vulnerabilities
 # NOTE: Sub-project pipelines are still running with the root working directory
@@ -57,6 +57,7 @@ jobs:
           imageName: $(imageName)
           repoName: $(repoName)
           Dockerfile: $(DockerFile)
+          timeBetweenRetriesVulnerabilityScan: $(timeBetweenRetriesVulnerabilityScan)
 
       # Need to tag 'latest' image (used by docker-tag-for-production)
       - script: |
@@ -83,6 +84,8 @@ jobs:
       demands:
       - agent.name -equals sl-jupyterhub-staging
 
+    displayName: "Deploying to staging"
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     steps:
       - script: |
           set -e
@@ -91,5 +94,33 @@ jobs:
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
-        displayName: "Deploying to staging"
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  - job: deployToProd
+    dependsOn: dockerBuildAndDockerPush
+    pool:
+      name: jupyterhub-onprem-prod
+      demands:
+      - agent.name -equals sl-jupyterhub-prod
+    
+    displayName: "Deploying to prod"
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/tags/'))
+    steps:
+      - script: |
+          set -e
+          
+          REPO="$HOME/jupyterhub-onprem"
+          if ! [ -d "$REPO" ]
+          then
+              echo "ERORR: repo $REPO does not exist."
+              exit 2
+          fi
+
+          cd $REPO
+          git pull
+          echo "Getting the latest git tag"
+          git fetch --tags
+          TAG=`git describe --tags`
+          echo "Found tag $TAG"
+          
+          IMAGE=${{ variables.imageNameNexus }}:$TAG
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
