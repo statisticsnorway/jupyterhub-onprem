@@ -18,7 +18,7 @@ services:
     depends_on:
       - hub-db
     restart: always
-    image: nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterhub-onprem:latest
+    image: ${DOCKER_HUB_IMAGE}
     container_name: jupyterhub
     volumes:
       # Bind Docker socket on the host so we can connect to the daemon from
