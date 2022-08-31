@@ -93,3 +93,36 @@ jobs:
 
         displayName: "Deploying to staging"
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+
+  - job: deployToProd
+    dependsOn: dockerBuildAndDockerPush
+    pool:
+      name: jupyterhub-onprem-prod
+      demands:
+      - agent.name -equals sl-jupyterhub-prod
+    
+    steps:
+      - script: |
+          set -e
+          
+          REPO="$HOME/jupyterhub-onprem"
+          if ! [ -d "$REPO" ]
+          then
+              echo "ERORR: repo $REPO does not exist."
+              exit 2
+          fi
+
+          cd $REPO
+          git pull
+          echo "Getting the latest git tag"
+          git fetch --tags
+          TAG=`git describe --tags`
+          echo "Found tag $TAG"
+          
+          IMAGE=${{ variables.imageNameNexus }}:$TAG
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+
+        displayName: "Deploying to prod"
+        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/tags/'))
