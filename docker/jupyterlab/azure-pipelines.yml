@@ -43,7 +43,7 @@ variables:
   - name: Dockerfile
     value: 'docker/jupyterlab/Dockerfile'
   - name: timeBetweenRetriesVulnerabilityScan
-    value: '15000'
+    value: '30000'
 
 # Job which builds Docker image, pushes this to GCR and checks for any image vulnerabilities
 # NOTE: Sub-project pipelines are still running with the root working directory
@@ -57,6 +57,7 @@ jobs:
           imageName: $(imageName)
           repoName: $(repoName)
           Dockerfile: $(DockerFile)
+          timeBetweenRetriesVulnerabilityScan: $(timeBetweenRetriesVulnerabilityScan)
 
       # Need to tag 'latest' image (used by docker-tag-for-production)
       - script: |
