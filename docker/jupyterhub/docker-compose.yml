@@ -45,7 +45,7 @@ services:
       # All containers will join this network
       DOCKER_NETWORK_NAME: jupyterhub-network
       # JupyterHub will spawn this Notebook image for users
-      DOCKER_NOTEBOOK_IMAGE: nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterlab-onprem:latest
+      DOCKER_NOTEBOOK_IMAGE: ${DOCKER_NOTEBOOK_IMAGE}
       # Using this run command (optional)
       DOCKER_SPAWN_CMD: start-singleuser.sh
       # Postgres db info
