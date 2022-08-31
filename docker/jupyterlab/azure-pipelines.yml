@@ -83,6 +83,8 @@ jobs:
       demands:
       - agent.name -equals sl-jupyterhub-staging
 
+    displayName: "Deploying to staging"
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     steps:
       - script: |
           set -e
@@ -91,9 +93,6 @@ jobs:
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
-        displayName: "Deploying to staging"
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-
   - job: deployToProd
     dependsOn: dockerBuildAndDockerPush
     pool:
@@ -101,6 +100,8 @@ jobs:
       demands:
       - agent.name -equals sl-jupyterhub-prod
     
+    displayName: "Deploying to prod"
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/tags/'))
     steps:
       - script: |
           set -e
@@ -122,7 +123,3 @@ jobs:
           IMAGE=${{ variables.imageNameNexus }}:$TAG
           echo "Pulling $IMAGE"
           docker pull $IMAGE
-
-
-        displayName: "Deploying to prod"
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/tags/'))
