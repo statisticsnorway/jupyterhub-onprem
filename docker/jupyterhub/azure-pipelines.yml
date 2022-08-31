@@ -43,6 +43,9 @@ variables:
     # This should be left as default for most cases. Override if you have a particular reason.
   - name: timeBetweenRetriesVulnerabilityScan
     value: '15000'
+    
+  - name: imageTagAfterVulnerabilityScan
+    value: $(Build.SourceBranchName)-$(Build.SourceVersion)
 
     # It's unusual to have a Dockerfile named anything else. This may be overridden for those unusual cases.
   - name: Dockerfile
