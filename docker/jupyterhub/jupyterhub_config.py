@@ -56,6 +56,9 @@ c.DockerSpawner.volumes = {
 # host_homedir_format_string must be set to map /ssb/bruker/{username} to /home/{username}
 c.SystemUserSpawner.host_homedir_format_string = "/ssb/bruker/{username}"
 
+# Allowing users to delete non-empty directories in the jupyterlab file-explorer
+c.FileContentsManager.always_delete_dir = True
+
 # Remove containers once they are stopped
 c.DockerSpawner.remove_containers = True
 
