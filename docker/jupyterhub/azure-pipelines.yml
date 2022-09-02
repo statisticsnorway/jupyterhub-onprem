@@ -100,12 +100,8 @@ jobs:
           docker pull $IMAGE
 
           REPO="$HOME/jupyterhub-onprem"
-          if [ -d "$REPO" ]
+          if ! [ -d "$REPO" ]
           then
-              echo "repo $REPO exists."
-              cd $REPO
-              git pull
-          else
               echo "repo $REPO does not exist locally, cloning it."
               git clone https://github.com/statisticsnorway/jupyterhub-onprem.git $REPO
 
@@ -125,6 +121,9 @@ jobs:
               make postgres-pw-gen
 
           fi
+
+          cd $REPO
+          git pull
             
           SERVICE_FILE=/etc/systemd/system/jupyterhub.service
           if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
