@@ -45,8 +45,8 @@ c.DockerSpawner.extra_host_config = { "network_mode": network_name }
 
 # Memory limits
 # Documentation https://jupyterhub-dockerspawner.readthedocs.io/en/latest/api/index.html
-c.DockerSpawner.mem_guarantee = "2G"
-c.DockerSpawner.mem_limit = "5G"
+c.DockerSpawner.mem_guarantee = "5G"
+c.DockerSpawner.mem_limit = "10G"
 
 # Mounting /ssb/bruker from the jupyterhub container to the user container
 c.DockerSpawner.volumes = { 
@@ -55,6 +55,9 @@ c.DockerSpawner.volumes = {
 
 # host_homedir_format_string must be set to map /ssb/bruker/{username} to /home/{username}
 c.SystemUserSpawner.host_homedir_format_string = "/ssb/bruker/{username}"
+
+# Allowing users to delete non-empty directories in the jupyterlab file-explorer
+c.FileContentsManager.always_delete_dir = True
 
 # Remove containers once they are stopped
 c.DockerSpawner.remove_containers = True
