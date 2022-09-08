@@ -99,6 +99,9 @@ jobs:
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
+          echo "Removing dangling images"
+          docker image prune --force
+
           REPO="$HOME/jupyterhub-onprem"
           if ! [ -d "$REPO" ]
           then
@@ -186,6 +189,9 @@ jobs:
           IMAGE=${{ variables.imageNameNexus }}:$TAG
           echo "Pulling $IMAGE"
           docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force
 
           SERVICE_FILE=/etc/systemd/system/jupyterhub.service
           if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then

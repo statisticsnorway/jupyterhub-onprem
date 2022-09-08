@@ -94,6 +94,9 @@ jobs:
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
+          echo "Removing dangling images"
+          docker image prune --force
+
   - job: deployToProd
     dependsOn: dockerBuildAndDockerPush
     pool:
@@ -124,3 +127,6 @@ jobs:
           IMAGE=${{ variables.imageNameNexus }}:$TAG
           echo "Pulling $IMAGE"
           docker pull $IMAGE
+          
+          echo "Removing dangling images"
+          docker image prune --force
