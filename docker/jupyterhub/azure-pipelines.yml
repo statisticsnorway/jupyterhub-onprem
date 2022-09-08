@@ -87,7 +87,7 @@ jobs:
     pool:
       name: jupyterhub-onprem-staging
       demands:
-      - agent.name -equals sl-jupyterhub-staging
+      - agent.name -equals staging-agent
 
     displayName: "Deploying to staging"
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
@@ -145,7 +145,7 @@ jobs:
     pool:
       name: jupyterhub-onprem-prod
       demands:
-      - agent.name -equals sl-jupyterhub-prod
+      - agent.name -equals prod-agent
 
     displayName: "Deploying to prod"
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
