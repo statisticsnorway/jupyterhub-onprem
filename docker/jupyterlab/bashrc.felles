@@ -1,17 +1,9 @@
-#!/bin/sh
-
-export FROM_ENVSH=true
-
-# Tried adding all of the lines below in Dockerfile but failed.
-# For some reason stamme_variabel could not be read
-# and oracle didn't "find" the oracle variabels.
-# I checked and the environment variables did exist.
-# Because this file runs every time a user starts a server
-# we ensure the user gets the environment variables needed.
+# /usr/local/share/etc/bashrc.felles
 
 # Get all variables from stamme_variabel
 source /etc/profile.d/stamme_variabel
 
+# Set FELLES environment variable
 export FELLES=/ssb/bruker/felles
 
 # Setting up environment variables for pip and pipenv
@@ -28,3 +20,9 @@ export OCI_LIB=/usr/lib/oracle/21/client64/lib
 export ORACLE_HOME=/usr/lib/oracle/21/client64
 export TNS_ADMIN=/usr/lib/oracle/21/client64/lib/network
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/21/client64/lib
+
+# Calling check-git-config.sh
+CHECK_GIT_CONFIG_FILE=/usr/local/bin/check-git-config.sh
+if [ -f $CHECK_GIT_CONFIG_FILE ]; then
+        CHECK_GIT_CONFIG_FILE
+fi

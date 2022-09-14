@@ -46,9 +46,8 @@ RUN R CMD javareconf -e && \
 # the file is sourced before the kernels start
 RUN ln -s /ssb/share/etc/stamme_variabel /etc/profile.d/stamme_variabel
 
-# Create an empty bashrc.felles at /usr/local/share/etc/bashrc.felles.
-RUN mkdir -p /usr/local/share/etc/ && \
-    touch /usr/local/share/etc/bashrc.felles
+RUN mkdir -p /usr/local/share/etc/
+COPY bashrc.felles /usr/local/share/etc/bashrc.felles
 
 # Copy the kernels. (pre-defined kernels are found at /opt/conda/share/jupyter/kernels)
 COPY kernels/ir /opt/conda/share/jupyter/kernels/ir/
@@ -61,10 +60,5 @@ RUN chmod +x /opt/conda/share/jupyter/kernels/ir/r.sh
 COPY python-env.bash /usr/local/bin/python-env.bash
 RUN chmod +x /usr/local/bin/python-env.bash
 RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
-
-# Start up hooks
-# Setting up environment variables for pip, oracle etc..
-# https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html#startup-hooks
-COPY env.sh /usr/local/bin/before-notebook.d/env.sh
 
 USER $NB_UID
