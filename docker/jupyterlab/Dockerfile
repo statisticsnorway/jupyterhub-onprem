@@ -16,6 +16,8 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/ora
 RUN apt update && \
     # alien is used to convert .rpms to .deb packages
     apt-get install -y alien && \
+    # Installing ping
+    apt-get install -y iputils-ping && \
     # libaio required by oracle 64-bit client
     apt-get install -y libaio1 libaio-dev && \
     apt autoremove -y && \
