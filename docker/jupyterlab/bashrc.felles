@@ -6,6 +6,9 @@ source /etc/profile.d/stamme_variabel
 # Set FELLES environment variable
 export FELLES=/ssb/bruker/felles
 
+# Adding pythonForSsb in PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:/ssb/bruker/felles/pythonForSsb
+
 # Setting up environment variables for pip and pipenv
 # Pip config so users install from Nexus.
 export PIP_INDEX=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi
