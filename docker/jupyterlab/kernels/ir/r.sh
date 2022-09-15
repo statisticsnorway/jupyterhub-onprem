@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-# setup environment variable, etc.
-if [ "$INGEN_STAMMER_TAKK" == "" ]; then
-        source /etc/profile.d/stamme_variabel
-fi
+# setup user defined environment variables
+# .bashrc also calls bashrc.felles
+source $HOME/.bashrc
 
-export FELLES="/ssb/bruker/felles"
 export R_PROFILE_USER="/opt/conda/share/jupyter/kernels/ir/Rstartup"
 export R_LIBS_USER="/usr/lib/R/library"
 
