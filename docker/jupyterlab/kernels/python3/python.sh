@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-source /etc/profile.d/stamme_variabel
-
-export FELLES=/ssb/bruker/felles
-export PYTHONPATH=$PYTHONPATH:/ssb/bruker/felles/pythonForSsb
+# setup user defined environment variables
+# .bashrc also calls bashrc.felles
+source $HOME/.bashrc
 
 exec /opt/conda/bin/python -m ipykernel $@
