@@ -43,6 +43,17 @@ ENV OCI_LIB /usr/lib/oracle/21/client64/lib
 RUN R CMD javareconf -e && \
     R -e "install.packages('ROracle', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
+USER $NB_UID
+
+# On-premises specific packages
+RUN echo "**** install cx-Oracle ****" && \
+    python3 -m pip install cx-Oracle && \
+    python3 -m pip cache purge && \
+    conda clean --all -y && \
+    jupyter lab clean
+
+USER root
+
 # Allowing usage of stamme_variabler in the terminal
 # stamme_variabler is also useable in the kernels as
 # the file is sourced before the kernels start
