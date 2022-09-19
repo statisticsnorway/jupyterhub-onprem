@@ -74,4 +74,7 @@ COPY python-env.bash /usr/local/bin/python-env.bash
 RUN chmod +x /usr/local/bin/python-env.bash
 RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
 
+COPY start-notebook.sh /usr/local/bin/start-notebook.sh
+RUN chmod +x /usr/local/bin/start-notebook.sh
+
 USER $NB_UID
