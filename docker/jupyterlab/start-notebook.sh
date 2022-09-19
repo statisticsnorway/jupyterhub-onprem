@@ -21,8 +21,7 @@ fi
 
 # if container is started as root we pull and install firewall certificate for github
 if [ "$(id -u)" == 0 ] ; then
-    wget https://nexus.ssb.no/repository/certificate_repo/ssb/cert_Decrypt-CA.crt -P /tmp/
-    cp /tmp/cert_Decrypt-CA.crt /usr/local/share/ca-certificates
+    wget https://nexus.ssb.no/repository/certificate_repo/ssb/cert_Decrypt-CA.crt -P /usr/local/share/ca-certificates/
     update-ca-certificates
 fi
 
