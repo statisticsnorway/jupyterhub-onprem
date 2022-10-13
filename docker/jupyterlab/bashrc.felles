@@ -15,7 +15,6 @@ export PIP_INDEX=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi
 export PIP_INDEX_URL=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple
 export PIPENV_PYPI_MIRROR=$PIP_INDEX_URL
 export PIP_TRUSTED_HOST=pl-nexuspro-p.ssb.no
-export PIP_REQUIRE_VIRTUALENV=true
 
 # Setting up environment variables for oracle
 export OCI_INC=/usr/include/oracle/21/client64
