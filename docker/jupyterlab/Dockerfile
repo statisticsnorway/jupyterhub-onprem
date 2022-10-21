@@ -76,4 +76,7 @@ COPY python-env.bash /usr/local/bin/python-env.bash
 RUN chmod +x /usr/local/bin/python-env.bash
 RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
 
+# User will not be able to install packages outside of a virtual environment
+RUN echo export PIP_REQUIRE_VIRTUALENV=true >> $HOME/.bashrc
+
 USER $NB_UID
