@@ -54,6 +54,8 @@ RUN echo "**** install cx-Oracle ****" && \
     conda clean --all -y && \
     jupyter lab clean
 
+RUN chown -R $NB_UID /home/jovyan/.cache
+
 USER root
 
 # Allowing usage of stamme_variabler in the terminal
