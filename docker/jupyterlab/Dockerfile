@@ -43,6 +43,9 @@ ENV OCI_LIB /usr/lib/oracle/21/client64/lib
 RUN R CMD javareconf -e && \
     R -e "install.packages('ROracle', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
+# Needed for installs as non-root.
+RUN chown -R $NB_UID /home/jovyan/.cache
+
 USER $NB_UID
 
 # On-premises specific packages
@@ -53,8 +56,6 @@ RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
     jupyter lab clean
-
-RUN chown -R $NB_UID /home/jovyan/.cache
 
 USER root
 
