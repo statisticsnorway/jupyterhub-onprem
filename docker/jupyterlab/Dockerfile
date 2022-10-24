@@ -43,6 +43,9 @@ ENV OCI_LIB /usr/lib/oracle/21/client64/lib
 RUN R CMD javareconf -e && \
     R -e "install.packages('ROracle', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
+# Needed for installs as non-root
+RUN chown -R $NB_UID /home/jovyan/.cache
+
 USER $NB_UID
 
 # On-premises specific packages
