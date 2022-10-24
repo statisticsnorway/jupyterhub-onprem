@@ -25,7 +25,6 @@ resources:
       type: github
       name: statisticsnorway/azure-pipelines-templates
       endpoint: statisticsnorway
-      ref: override-vuln-check-condition
 
 pool:
   name: 'extended_storage'
