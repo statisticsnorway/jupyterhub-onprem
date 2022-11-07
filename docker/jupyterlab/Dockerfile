@@ -52,7 +52,7 @@ USER $NB_UID
 RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install cx-Oracle && \
     echo "**** install Dapla tools" && \
-    python3 -m pip install dapla-toolbelt==1.3.3 ssb-datadoc[gcs]==0.2.1 ssb-project-cli==1.0.2 && \
+    python3 -m pip install dapla-toolbelt==1.3.3 ssb-datadoc[gcs]==0.2.1 ssb-project-cli==1.0.5 && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
     jupyter lab clean
