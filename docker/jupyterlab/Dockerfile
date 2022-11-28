@@ -20,6 +20,8 @@ RUN apt update && \
     apt-get install -y iputils-ping && \
     # libaio required by oracle 64-bit client
     apt-get install -y libaio1 libaio-dev && \
+    # required by PAM authenticatiom
+    apt-get install -y sssd && \
     apt autoremove -y && \
     apt-get -y clean all
 
