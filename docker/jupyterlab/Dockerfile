@@ -80,4 +80,7 @@ RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
 # User will not be able to install packages outside of a virtual environment
 ENV PIP_REQUIRE_VIRTUALENV=true
 
+# Use proxy for https connections
+ENV https_proxy=http://proxy.ssb.no:3128
+
 USER $NB_UID
