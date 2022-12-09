@@ -52,6 +52,7 @@ RUN echo "**** install cx-Oracle ****" && \
     echo "**** install Dapla tools" && \
     python3 -m pip install dapla-toolbelt==1.3.7 ssb-datadoc==0.2.2 ssb-project-cli==1.0.9 && \
     python3 -m pip cache purge && \
+    python3 -m pip install saspy && \
     conda clean --all -y && \
     jupyter lab clean
 
