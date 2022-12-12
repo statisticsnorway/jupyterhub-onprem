@@ -80,8 +80,27 @@ RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
 
 # User will not be able to install packages outside of a virtual environment
 ENV PIP_REQUIRE_VIRTUALENV=true
+# Setting up environment variables for pip and pipenv
+# Pip config so users install from Nexus.
+ENV PIP_INDEX=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi
+ENV PIP_INDEX_URL=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple
+ENV PIPENV_PYPI_MIRROR=$PIP_INDEX_URL
+ENV PIP_TRUSTED_HOST=pl-nexuspro-p.ssb.no
 
 # Use proxy for https connections
 ENV https_proxy=http://proxy.ssb.no:3128
+
+# Set FELLES environment variable
+ENV FELLES=/ssb/bruker/felles
+
+# Adding pythonForSsb in PYTHONPATH
+ENV PYTHONPATH=$PYTHONPATH:/ssb/bruker/felles/pythonForSsb
+
+# Setting up environment variables for oracle
+ENV OCI_INC=/usr/include/oracle/21/client64
+ENV OCI_LIB=/usr/lib/oracle/21/client64/lib
+ENV ORACLE_HOME=/usr/lib/oracle/21/client64
+ENV TNS_ADMIN=/usr/lib/oracle/21/client64/lib/network
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/21/client64/lib
 
 USER $NB_UID

@@ -3,26 +3,6 @@
 # Get all variables from stamme_variabel
 source /etc/profile.d/stamme_variabel
 
-# Set FELLES environment variable
-export FELLES=/ssb/bruker/felles
-
-# Adding pythonForSsb in PYTHONPATH
-export PYTHONPATH=$PYTHONPATH:/ssb/bruker/felles/pythonForSsb
-
-# Setting up environment variables for pip and pipenv
-# Pip config so users install from Nexus.
-export PIP_INDEX=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi
-export PIP_INDEX_URL=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple
-export PIPENV_PYPI_MIRROR=$PIP_INDEX_URL
-export PIP_TRUSTED_HOST=pl-nexuspro-p.ssb.no
-
-# Setting up environment variables for oracle
-export OCI_INC=/usr/include/oracle/21/client64
-export OCI_LIB=/usr/lib/oracle/21/client64/lib
-export ORACLE_HOME=/usr/lib/oracle/21/client64
-export TNS_ADMIN=/usr/lib/oracle/21/client64/lib/network
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/21/client64/lib
-
 # sourcing the default .bashrc from jupyterlab-common
 . /etc/skel/.bashrc
 
