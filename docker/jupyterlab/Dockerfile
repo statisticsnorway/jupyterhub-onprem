@@ -50,6 +50,7 @@ USER $NB_UID
 RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install cx-Oracle && \
     echo "**** install Dapla tools" && \
+    python3 -m pip install saspy && \
     python3 -m pip install dapla-toolbelt==1.3.7 ssb-datadoc==0.2.2 ssb-project-cli==1.0.9 && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
