@@ -63,6 +63,8 @@ services:
     image: ${STATBANK_AUTHENTICATOR_IMAGE}
     container_name: statbank-authenticator
     restart: always
+    environment:
+      ON_PREM: True
     env_file:
       - ~/secrets/statbank-authenticator/statbank.env
 
