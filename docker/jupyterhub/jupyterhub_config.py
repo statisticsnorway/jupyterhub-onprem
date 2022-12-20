@@ -104,5 +104,6 @@ c.JupyterHub.db_url = "postgresql://postgres:{password}@{host}/{db}".format(
 )
 
 c.DockerSpawner.environment = {
-    "STATBANK_ENCRYPT_URL": os.environ["STATBANK_ENCRYPT_URL"]
+    "STATBANK_ENCRYPT_URL": os.environ["STATBANK_ENCRYPT_URL"],
+    "STATBANK_BASE_URL": os.environ["STATBANK_BASE_URL"]
 }
