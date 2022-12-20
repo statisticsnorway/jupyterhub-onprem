@@ -52,7 +52,7 @@ services:
       POSTGRES_DB: jupyterhub
       POSTGRES_HOST: hub-db
       # Should be passed on to jupyterlab instances
-      STATBANK_ENCRYPT_URL: http://statbank-authenticator/encrypt
+      STATBANK_ENCRYPT_URL: http://statbank-authenticator:8080/encrypt
     env_file:
       - ~/secrets/postgres/postgres.env
     command: >
@@ -62,8 +62,6 @@ services:
     image: ${STATBANK_AUTHENTICATOR_IMAGE}
     container_name: statbank-authenticator
     restart: always
-    ports:
-      - "80:8080"
     env_file:
       - ~/secrets/statbank-authenticator/statbank.env
 
