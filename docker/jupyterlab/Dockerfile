@@ -89,7 +89,7 @@ ENV PIP_TRUSTED_HOST=pl-nexuspro-p.ssb.no
 
 # Use proxy for https connections
 ENV https_proxy=http://proxy.ssb.no:3128
-ENV no_proxy=nexus.ssb.no,git-adm.ssb.no
+ENV no_proxy=nexus.ssb.no,git-adm.ssb.no,i.test.ssb.no,i.ssb.no
 
 # Set FELLES environment variable
 ENV FELLES=/ssb/bruker/felles
