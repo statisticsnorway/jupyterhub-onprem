@@ -51,10 +51,13 @@ RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install cx-Oracle && \
     echo "**** install Dapla tools" && \
     python3 -m pip install saspy && \
-    python3 -m pip install dapla-toolbelt==1.3.7 ssb-datadoc==0.2.4 ssb-project-cli==1.0.11 && \
+    python3 -m pip install dapla-toolbelt==1.3.8 ssb-datadoc==0.2.4 ssb-project-cli==1.0.12 dapla-team-cli==0.0.6 && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
     jupyter lab clean
+
+# required by dapla team cli
+ENV DAPLA_TEAM_API_BASE_URL="http://dapla-team-api.dapla.svc.cluster.local/"
 
 USER root
 
