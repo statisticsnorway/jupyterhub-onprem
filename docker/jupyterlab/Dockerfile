@@ -89,7 +89,9 @@ ENV PIP_INDEX=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi
 ENV PIP_INDEX_URL=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple
 ENV PIPENV_PYPI_MIRROR=$PIP_INDEX_URL
 ENV PIP_TRUSTED_HOST=pl-nexuspro-p.ssb.no
-RUN pip config set global.index-url http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi --global
+RUN pip config set global.index http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi --global && \
+    pip config set global.index-url http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple --global && \
+    pip config set global.trusted-host pl-nexuspro-p.ssb.no --global
 
 # Use proxy for https connections
 ENV https_proxy=http://proxy.ssb.no:3128
