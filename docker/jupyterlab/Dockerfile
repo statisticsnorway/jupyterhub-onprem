@@ -41,7 +41,7 @@ ENV OCI_LIB /usr/lib/oracle/21/client64/lib
 
 # Install R packages that are not available as Ubuntu packages, and is only needed on-premises
 RUN R CMD javareconf -e && \
-    R -e "install.packages('ROracle', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+    R -e "install.packages('ROracle', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')"
 
 
 USER $NB_UID
@@ -77,9 +77,8 @@ COPY kernels/python3 /opt/conda/share/jupyter/kernels/python3/
 RUN chmod +x /opt/conda/share/jupyter/kernels/python3/python.sh
 RUN chmod +x /opt/conda/share/jupyter/kernels/ir/r.sh
 
-COPY python-env.bash /usr/local/bin/python-env.bash
-RUN chmod +x /usr/local/bin/python-env.bash
-RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
+# Change default R repo
+COPY Rprofile.site /etc/R/Rprofile.site
 
 # User will not be able to install packages outside of a virtual environment
 ENV PIP_REQUIRE_VIRTUALENV=true
