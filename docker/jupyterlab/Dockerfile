@@ -41,7 +41,7 @@ ENV OCI_LIB /usr/lib/oracle/21/client64/lib
 
 # Install R packages that are not available as Ubuntu packages, and is only needed on-premises
 RUN R CMD javareconf -e && \
-    R -e "install.packages('ROracle', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+    R -e "install.packages('ROracle', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')"
 
 
 USER $NB_UID
