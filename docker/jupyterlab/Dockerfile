@@ -77,9 +77,6 @@ COPY kernels/python3 /opt/conda/share/jupyter/kernels/python3/
 RUN chmod +x /opt/conda/share/jupyter/kernels/python3/python.sh
 RUN chmod +x /opt/conda/share/jupyter/kernels/ir/r.sh
 
-COPY python-env.bash /usr/local/bin/python-env.bash
-RUN chmod +x /usr/local/bin/python-env.bash
-RUN ln -s /usr/local/bin/python-env.bash /usr/local/bin/python-env
 
 # User will not be able to install packages outside of a virtual environment
 ENV PIP_REQUIRE_VIRTUALENV=true
