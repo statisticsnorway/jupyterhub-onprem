@@ -69,9 +69,6 @@ RUN ln -s /ssb/share/etc/stamme_variabel /etc/profile.d/stamme_variabel
 RUN mkdir -p /usr/local/share/etc/
 COPY bashrc.felles /usr/local/share/etc/bashrc.felles
 
-# Creates home directory if it does not exist
-COPY homedir.sh /usr/local/bin/before-notebook.d/homedir.sh
-
 # Copy the kernels. (pre-defined kernels are found at /opt/conda/share/jupyter/kernels)
 COPY kernels/ir /opt/conda/share/jupyter/kernels/ir/
 COPY kernels/python3 /opt/conda/share/jupyter/kernels/python3/
