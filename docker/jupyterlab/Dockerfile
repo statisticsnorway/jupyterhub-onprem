@@ -94,7 +94,7 @@ RUN pip config set global.index http://pl-nexuspro-p.ssb.no:8081/repository/pypi
 
 # Use proxy for https connections
 ENV https_proxy=http://proxy.ssb.no:3128
-ENV no_proxy=nexus.ssb.no,git-adm.ssb.no,i.test.ssb.no,i.ssb.no,github.com,api.github.com,codeload.github.com
+ENV no_proxy=nexus.ssb.no,git-adm.ssb.no,i.test.ssb.no,i.ssb.no,data.ssb.no,github.com,api.github.com,codeload.github.com
 
 # Pull and update ca-certificates
 RUN mkdir "/usr/local/bin/start-notebook.d" && \
