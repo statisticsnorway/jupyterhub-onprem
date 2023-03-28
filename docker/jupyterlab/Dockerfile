@@ -20,6 +20,8 @@ RUN apt update && \
     apt-get install -y iputils-ping && \
     # libaio required by oracle 64-bit client
     apt-get install -y libaio1 libaio-dev && \
+    # Adding fonts required for tidyverse and other R dependencies
+    apt-get install -y libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev && \
     apt autoremove -y && \
     apt-get -y clean all
 
