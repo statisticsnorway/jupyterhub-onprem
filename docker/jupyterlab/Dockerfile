@@ -42,9 +42,10 @@ RUN ln -s /ssb/share/etc/tnsnames.ora /usr/lib/oracle/21/client64/lib/network/tn
 # required to build ROracle
 ENV OCI_INC /usr/include/oracle/21/client64
 ENV OCI_LIB /usr/lib/oracle/21/client64/lib
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 # Install R packages that are not available as Ubuntu packages, and is only needed on-premises
-RUN R CMD javareconf -e && \
+RUN R CMD javareconf && \
     R -e "install.packages('ROracle', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')"
 
 
