@@ -61,6 +61,8 @@ RUN echo "**** install cx-Oracle ****" && \
     conda clean --all -y && \
     jupyter lab clean
 
+# Set template version for ssb-project-cli (https://github.com/statisticsnorway/ssb-project-template-stat)
+ENV STAT_TEMPLATE_DEFAULT_REFERENCE="1.0.1"
 # required by dapla team cli
 ENV DAPLA_TEAM_API_BASE_URL="http://dapla-team-api.dapla.svc.cluster.local/"
 
