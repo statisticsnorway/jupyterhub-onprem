@@ -122,4 +122,7 @@ ENV ORACLE_HOME=/usr/lib/oracle/21/client64
 ENV TNS_ADMIN=/usr/lib/oracle/21/client64/lib/network
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/21/client64/lib
 
+# Add conda lib to LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib
+
 USER $NB_UID
