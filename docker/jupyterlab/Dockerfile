@@ -70,7 +70,6 @@ RUN echo "**** install Dapla CLI tools using pipx" && \
 # On-premises specific packages
 RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install cx-Oracle && \
-    echo "**** install Dapla tools" && \
     python3 -m pip install saspy && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
