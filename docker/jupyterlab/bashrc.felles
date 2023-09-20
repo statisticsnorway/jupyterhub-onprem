@@ -3,6 +3,8 @@
 # Get all variables from stamme_variabel
 source /etc/profile.d/stamme_variabel
 
+source /home/jovyan/.local/bin/
+
 # sourcing the default .bashrc from jupyterlab-common
 . /etc/skel/.bashrc
 

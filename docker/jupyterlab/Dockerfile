@@ -51,12 +51,28 @@ RUN R CMD javareconf && \
 
 USER $NB_UID
 
+RUN echo "**** install Dapla CLI tools using pipx" && \
+    # Currently this is installed with pip in the common image, remove it so the PATH points to the right one
+    python3 -m pip uninstall --yes ssb-project-cli && \
+    # Correctly set path for pipx
+    export PATH=$(python3 -m site --user-base)/bin:$PATH && \
+    pipx install \
+    ssb-project-cli==1.3.1 && \
+    echo "**** install Dapla libraries" && \
+    python3 -m pip install \
+    dapla-toolbelt==1.8.1 \
+    ssb-datadoc==0.3.0 \
+    kvakk-git-tools==2.2.1 && \
+    echo "**** install other tools" && \
+    python3 -m pip cache purge && \
+    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+
 # On-premises specific packages
 RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install cx-Oracle && \
     echo "**** install Dapla tools" && \
     python3 -m pip install saspy && \
-    python3 -m pip install dapla-toolbelt==1.6.2 ssb-datadoc==0.3.0 ssb-project-cli==1.3.1 dapla-team-cli==0.1.2 kvakk-git-tools==2.2.1 && \
+    python3 -m pip install dapla-toolbelt==1.6.2 ssb-datadoc==0.3.0 && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
     jupyter lab clean
