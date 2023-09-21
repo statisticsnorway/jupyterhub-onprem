@@ -48,21 +48,25 @@ ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 RUN R CMD javareconf && \
     R -e "install.packages('ROracle', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')"
 
-
 USER $NB_UID
 
-# On-premises specific packages
 RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install cx-Oracle && \
-    echo "**** install Dapla tools" && \
     python3 -m pip install saspy && \
-    python3 -m pip install dapla-toolbelt==1.6.2 ssb-datadoc==0.3.0 ssb-project-cli==1.3.1 dapla-team-cli==0.1.2 kvakk-git-tools==2.2.1 && \
+    echo "**** install Dapla tools" && \
+    python3 -m pip install \
+    dapla-toolbelt==1.6.2 \
+    ssb-datadoc==0.3.0 \
+    ssb-project-cli==1.3.1 \
+    dapla-team-cli==0.1.2 \
+    kvakk-git-tools==2.2.1 && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
     jupyter lab clean
 
 # Set template version for ssb-project-cli (https://github.com/statisticsnorway/ssb-project-template-stat)
 ENV STAT_TEMPLATE_DEFAULT_REFERENCE="1.1.0"
+
 # required by dapla team cli
 ENV DAPLA_TEAM_API_BASE_URL="http://dapla-team-api.dapla.svc.cluster.local/"
 
@@ -89,6 +93,7 @@ COPY Rprofile.site /etc/R/Rprofile.site
 
 # User will not be able to install packages outside of a virtual environment
 ENV PIP_REQUIRE_VIRTUALENV=true
+
 # Setting up environment variables for pip and pipenv
 # Pip config so users install from Nexus.
 ENV PIP_INDEX=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi
