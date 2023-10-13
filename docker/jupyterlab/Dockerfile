@@ -55,8 +55,8 @@ RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install saspy && \
     echo "**** install Dapla tools" && \
     python3 -m pip install \
-    dapla-toolbelt==1.6.2 \
-    ssb-datadoc==0.3.0 \
+    dapla-toolbelt==1.8.4 \
+    ssb-datadoc==0.3.3 \
     ssb-project-cli==1.3.1 \
     dapla-team-cli==0.1.2 \
     kvakk-git-tools==2.2.1 && \
