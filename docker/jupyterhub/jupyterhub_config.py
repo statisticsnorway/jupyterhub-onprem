@@ -15,7 +15,7 @@ c.JupyterHub.spawner_class = "dockerspawner.SystemUserSpawner"
 c.PAMAuthenticator.pam_normalize_username = True
 
 # Add admin users
-c.PAMAuthenticator.admin_groups = {'wheel', "RBAG_jupyterhub_admins@ssb.no"}
+c.PAMAuthenticator.admin_groups = {"wheel", "RBAG_jupyterhub_admins@ssb.no"}
 
 # Remove users that are no longer able to authenticate
 c.Authenticator.delete_invalid_users = True
@@ -32,7 +32,7 @@ spawn_cmd = os.environ.get("DOCKER_SPAWN_CMD", "start-singleuser.sh")
 
 # 'user: root' must be set so the user container is spawned as root,
 # this allows changes to NB_USER, NB_UID and NB_GID
-c.DockerSpawner.extra_create_kwargs.update({ "command": spawn_cmd, "user": "root"})
+c.DockerSpawner.extra_create_kwargs.update({"command": spawn_cmd, "user": "root"})
 
 # Connect containers to this Docker network
 network_name = os.environ["DOCKER_NETWORK_NAME"]
@@ -41,7 +41,7 @@ c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
 
 # Pass the network name as argument to spawned containers
-c.DockerSpawner.extra_host_config = { "network_mode": network_name }
+c.DockerSpawner.extra_host_config = {"network_mode": network_name}
 
 # Memory limits
 # Documentation https://jupyterhub-dockerspawner.readthedocs.io/en/latest/api/index.html
@@ -49,9 +49,7 @@ c.DockerSpawner.mem_guarantee = "5G"
 c.DockerSpawner.mem_limit = "20G"
 
 # Mounting /ssb/bruker from the jupyterhub container to the user container
-c.DockerSpawner.volumes = { 
-        "/ssb": "/ssb"
-}
+c.DockerSpawner.volumes = {"/ssb": "/ssb"}
 
 # host_homedir_format_string must be set to map /ssb/bruker/{username} to /home/{username}
 c.SystemUserSpawner.host_homedir_format_string = "/ssb/bruker/{username}"
@@ -70,12 +68,14 @@ c.JupyterHub.authenticate_prometheus = False
 
 # Jupyterhub idle-culler-service
 import sys
+
 c.JupyterHub.services = [
     {
         "name": "jupyterhub-idle-culler-service",
         "command": [
             sys.executable,
-            "-m", "jupyterhub_idle_culler",
+            "-m",
+            "jupyterhub_idle_culler",
             "--timeout=3600",
         ],
         "admin": True,
@@ -94,8 +94,7 @@ c.JupyterHub.ssl_cert = os.environ["SSL_CERT"]
 # Persist hub data on volume mounted inside container
 data_dir = os.environ.get("DATA_VOLUME_CONTAINER", "/data")
 
-c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
-    "jupyterhub_cookie_secret")
+c.JupyterHub.cookie_secret_file = os.path.join(data_dir, "jupyterhub_cookie_secret")
 
 c.JupyterHub.db_url = "postgresql://postgres:{password}@{host}/{db}".format(
     host=os.environ["POSTGRES_HOST"],
@@ -104,6 +103,9 @@ c.JupyterHub.db_url = "postgresql://postgres:{password}@{host}/{db}".format(
 )
 
 c.DockerSpawner.environment = {
-    "STATBANK_ENCRYPT_URL": os.environ["STATBANK_ENCRYPT_URL"],
-    "STATBANK_BASE_URL": os.environ["STATBANK_BASE_URL"]
+    "STATBANK_ENCRYPT_URL": os.environ.get("STATBANK_ENCRYPT_URL", "UNKNOWN"),
+    "STATBANK_BASE_URL": os.environ.get("STATBANK_BASE_URL", "UNKNOWN"),
+    # Set the hostname of the server. We use this environment variable to match with the
+    # one used in Dapla Jupyterhub.
+    "JUPYTERHUB_HTTP_REFERER": os.environ.get("JUPYTERHUB_HTTP_REFERER", "UNKNOWN"),
 }

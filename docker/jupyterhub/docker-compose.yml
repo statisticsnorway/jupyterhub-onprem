@@ -27,11 +27,11 @@ services:
 
       # Bind Docker volume on host for JupyterHub database and cookie secrets
       - "data:/data"
-      
+
         # Mounting ssb nfs shares
       - "/ssb:/ssb"
 
-        # Mounting SSL_CERT & SSL_KEY      
+        # Mounting SSL_CERT & SSL_KEY
       - "~/secrets/ssl:/srv/jupyterhub/secrets"
 
         # Mounting /var/lib/sss so we can use sssd users from host
@@ -54,6 +54,7 @@ services:
       # Should be passed on to jupyterlab instances
       STATBANK_ENCRYPT_URL: http://statbank-authenticator:8080/encrypt
       STATBANK_BASE_URL: ${STATBANK_BASE_URL}
+      JUPYTERHUB_HTTP_REFERER: ${JUPYTERHUB_HTTP_REFERER}
     env_file:
       - ~/secrets/postgres/postgres.env
     command: >
