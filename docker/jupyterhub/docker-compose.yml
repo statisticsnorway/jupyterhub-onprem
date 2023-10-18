@@ -56,7 +56,6 @@ services:
       STATBANK_BASE_URL: ${STATBANK_BASE_URL}
       JUPYTERHUB_HTTP_REFERER: ${JUPYTERHUB_HTTP_REFERER}
     env_file:
-      - ~/secrets/compose/.env
       - ~/secrets/postgres/postgres.env
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
