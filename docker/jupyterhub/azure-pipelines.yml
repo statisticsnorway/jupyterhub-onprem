@@ -112,6 +112,7 @@ jobs:
               echo "creating necessary directories for ssl and postgres assuming they don't already exist"
               mkdir -p $HOME/secrets/ssl
               mkdir -p $HOME/secrets/postgres
+              mkdir -p $HOME/secrets/compose
 
               cd $REPO
                 
@@ -128,6 +129,7 @@ jobs:
 
           cd $REPO
           git pull
+          cp docker/jupyterhub/.env.staging ~/secrets/compose/.env
             
           SERVICE_FILE=/etc/systemd/system/jupyterhub.service
           if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
@@ -166,6 +168,7 @@ jobs:
               echo "creating necessary directories for ssl and postgres assuming they don't already exist"
               mkdir -p $HOME/secrets/ssl
               mkdir -p $HOME/secrets/postgres
+              mkdir -p $HOME/secrets/compose
 
               cd $REPO
                   
@@ -185,7 +188,7 @@ jobs:
           git fetch --tags
           TAG=`git describe --tags`
           echo "Found tag $TAG"
-          sed "s/<TAG>/$TAG/g" docker/jupyterhub/.env.prod > docker/jupyterhub/.env
+          sed "s/<TAG>/$TAG/g" docker/jupyterhub/.env.prod > ~/secrets/compose/.env
           
           IMAGE=${{ variables.imageNameNexus }}:$TAG
           echo "Pulling $IMAGE"
