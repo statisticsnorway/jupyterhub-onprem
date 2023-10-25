@@ -57,7 +57,7 @@ RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install \
     dapla-toolbelt==1.8.4 \
     ssb-datadoc==0.3.3 \
-    ssb-project-cli==1.3.1 \
+    ssb-project-cli==1.3.3 \
     dapla-team-cli==0.3.2 \
     kvakk-git-tools==2.2.1 && \
     python3 -m pip cache purge && \
