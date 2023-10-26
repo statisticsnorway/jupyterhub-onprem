@@ -60,7 +60,6 @@ RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
-    rm -f /tmp/requirements.txt && \
     jupyter lab clean
 
 # Set template version for ssb-project-cli (https://github.com/statisticsnorway/ssb-project-template-stat)
