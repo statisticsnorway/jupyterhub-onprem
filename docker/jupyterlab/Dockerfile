@@ -50,18 +50,17 @@ RUN R CMD javareconf && \
 
 USER $NB_UID
 
+# Copy the requirements.txt file into the container
+COPY requirements.txt /tmp/requirements.txt
+
 RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install cx-Oracle && \
     python3 -m pip install saspy && \
-    echo "**** install Dapla tools" && \
-    python3 -m pip install \
-    dapla-toolbelt==1.8.4 \
-    ssb-datadoc==0.3.3 \
-    ssb-project-cli==1.3.3 \
-    dapla-team-cli==0.3.2 \
-    kvakk-git-tools==2.2.1 && \
+    echo "**** install Dapla tools ****" && \
+    python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
+    rm -f /tmp/requirements.txt && \
     jupyter lab clean
 
 # Set template version for ssb-project-cli (https://github.com/statisticsnorway/ssb-project-template-stat)
