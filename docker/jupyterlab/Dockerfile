@@ -1,4 +1,5 @@
-FROM eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterlab-common:latest
+ARG base_image="eu.gcr.io/prod-bip/ssb/statistikktjenester/jupyterlab-common:latest"
+FROM ${base_image}
 
 USER root
 
