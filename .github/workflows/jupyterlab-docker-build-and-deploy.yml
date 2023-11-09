@@ -1,4 +1,4 @@
-name: Docker Build and Deploy
+name: Jupyterlab Docker Build and Deploy
 
 on:
   release:
@@ -7,12 +7,10 @@ on:
     branches:
       - "main"
     paths:
-      - 'docker/jupyterhub/**'
       - 'docker/jupyterlab/**'
       - '.github/workflows/docker-build-and-deploy.yml'
   pull_request:
     paths:
-      - 'docker/jupyterhub/**'
       - 'docker/jupyterlab/**'
       - '.github/workflows/docker-build-and-deploy.yml'
 
@@ -20,41 +18,11 @@ env:
   REGISTRY: europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter
   TAG: ${{ github.ref_name }}-${{ github.sha }}
   IMAGE_PREFIX: on-prem-
+  BASE_IMAGE: jupyterlab-common:latest
+  NAME: jupyterlab
 
 jobs:
-  changes:
-    name: "Discover which images to build"
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-      contents: read
-    outputs:
-      # If the triggering event is a release, build all images, otherwise only build those with changes
-      images: ${{ github.event_name == 'release' && '["jupyterhub", "jupyterlab"]' || steps.filter.outputs.changes }}
-    steps:
-    - name: "Check out repo"
-      uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2
-      id: filter
-      if: github.event_name != 'release'
-      with:
-        filters: |
-          jupyterhub:
-            - 'docker/jupyterhub/**'
-            - '.github/workflows/docker-build-and-deploy.yml'
-          jupyterlab:
-            - 'docker/jupyterlab/**'
-            - '.github/workflows/docker-build-and-deploy.yml'
-
   docker:
-    needs: changes
-    # Don't run if no images to build
-    if: needs.changes.outputs.images != '[]'
-    strategy:
-      matrix:
-        # Parse JSON array containing names of all filters matching any of changed files
-        # e.g. ['jupyterhub', 'spark-r'] if both package folders contain changes
-        image: ${{ fromJSON(needs.changes.outputs.images) }}
     permissions:
       contents: "read"
       id-token: "write"
@@ -82,7 +50,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ matrix.image }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ env.NAME }}
           # Docker tags based on the following events/attributes
           tags: |
             type=ref,event=branch
@@ -96,13 +64,14 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v4
         with:
-          context: docker/${{ matrix.image }}
-          file: docker/${{ matrix.image }}/Dockerfile
+          context: docker/${{ env.NAME }}
+          file: docker/${{ env.NAME }}/Dockerfile
           push: true
+          build-args: base_image=${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}
           tags: |
             ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ matrix.image }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ matrix.image }}:buildcache,mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ env.NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ env.NAME }}:buildcache,mode=max
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
