@@ -17,7 +17,7 @@ on:
 env:
   REGISTRY: europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter
   TAG: ${{ github.ref_name }}-${{ github.sha }}
-  IMAGE_PREFIX: on-prem-
+  IMAGE_PREFIX: onprem-
   BASE_IMAGE: jupyterlab-common:latest
   NAME: jupyterlab
 
@@ -27,6 +27,8 @@ jobs:
       contents: "read"
       id-token: "write"
     runs-on: ubuntu-latest
+    outputs:
+      semver_image_tag: v${{ steps.metadata.outputs.version }}
     steps:
       - name: "Check out repo"
         uses: actions/checkout@v3
@@ -79,6 +81,9 @@ jobs:
   deploy-on-prem:
     needs: jupyterlab-docker-build
     runs-on: ubuntu-latest
+    env:
+      DEPLOY_ENVIRONMENT: ${{ github.event_name == 'release' && 'prod' || 'staging' }}
+      IMAGE_TAG: ${{ github.event_name == 'release' && needs.jupyterlab-docker-build.outputs.semver_image_tag || 'latest' }}
     steps:
     - name: 'Trigger the Azure Pipeline deploy job'
       uses: Azure/pipelines@releases/v1
@@ -86,3 +91,4 @@ jobs:
         azure-devops-project-url: 'https://dev.azure.com/statisticsnorway/Statistikktjenester'
         azure-pipeline-name: 'jupyterlab-onprem-deploy'
         azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
+        azure-pipeline-variables:  '{"imageTag": "${{ env.IMAGE_TAG }}", "environment": "${{ env.DEPLOY_ENVIRONMENT }}"}'

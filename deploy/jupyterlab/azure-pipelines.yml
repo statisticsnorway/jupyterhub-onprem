@@ -1,12 +1,3 @@
-parameters:
-- name: environment
-  displayName: Environment to deploy to
-  type: string
-  default: staging
-  values:
-  - staging
-  - prod
-
 name: $(Build.SourceBranch)-$(date:yyyyMMdd)$(rev:.r)
 
 # Triggered directly by Github Actions
@@ -14,18 +5,39 @@ trigger: none
 
 variables:
   - name: imageNameNexus
-    value: 'nexus.ssb.no:8439/artifact-registry-5n/dapla-stat-docker/jupyter/on-prem-jupyterlab'
+    value: 'nexus.ssb.no:8439/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterlab'
   - name: imageTag
     value: latest
+  - name: environment
 
 jobs:
-  - job: deploy
+  - job: deploy-staging
+    condition: ${{ variables.environment == 'staging' }}
     pool:
-      name: jupyterhub-onprem-${{ parameters.environment }}
+      name: jupyterhub-onprem-staging
       demands:
-      - agent.name -equals ${{ parameters.environment }}-agent
+      - agent.name -equals staging-agent
 
-    displayName: "Deploying to ${{ parameters.environment }}"
+    displayName: "Deploy to staging"
+    steps:
+      - script: |
+          set -e
+
+          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force
+
+  - job: deploy-prod
+    condition: ${{ variables.environment == 'prod' }}
+    pool:
+      name: jupyterhub-onprem-prod
+      demands:
+      - agent.name -equals prod-agent
+
+    displayName: "Deploy to prod"
     steps:
       - script: |
           set -e
