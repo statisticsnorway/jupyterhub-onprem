@@ -1,3 +1,12 @@
+parameters:
+  - name: imageTag
+    type: string
+  - name: environment
+    type: string
+    values:
+      - staging
+      - prod
+
 name: $(Build.SourceBranch)-$(date:yyyyMMdd)$(rev:.r)
 
 # Triggered directly by Github Actions
@@ -6,13 +15,10 @@ trigger: none
 variables:
   - name: imageNameNexus
     value: 'nexus.ssb.no:8439/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterlab'
-  - name: imageTag
-    value: latest
-  - name: environment
 
 jobs:
   - job: deploy_staging
-    condition: ${{ eq(variables.environment, 'staging') }}
+    condition: ${{ eq(parameters.environment, 'staging') }}
     pool:
       name: jupyterhub-onprem-staging
       demands:
@@ -23,7 +29,7 @@ jobs:
       - script: |
           set -e
 
-          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
+          IMAGE=${{ variables.imageNameNexus }}:${{ parameters.imageTag }}
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
@@ -31,7 +37,7 @@ jobs:
           docker image prune --force
 
   - job: deploy_prod
-    condition: ${{ eq(variables.environment, 'prod') }}
+    condition: ${{ eq(parameters.environment, 'prod') }}
     pool:
       name: jupyterhub-onprem-prod
       demands:
@@ -42,7 +48,7 @@ jobs:
       - script: |
           set -e
 
-          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
+          IMAGE=${{ variables.imageNameNexus }}:${{ parameters.imageTag }}
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
