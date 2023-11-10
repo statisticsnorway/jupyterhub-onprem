@@ -11,7 +11,7 @@ variables:
   - name: environment
 
 jobs:
-  - job: deploy-staging
+  - job: deploy_staging
     condition: ${{ eq(variables.environment, 'staging') }}
     pool:
       name: jupyterhub-onprem-staging
@@ -30,7 +30,7 @@ jobs:
           echo "Removing dangling images"
           docker image prune --force
 
-  - job: deploy-prod
+  - job: deploy_prod
     condition: ${{ eq(variables.environment, 'prod') }}
     pool:
       name: jupyterhub-onprem-prod
