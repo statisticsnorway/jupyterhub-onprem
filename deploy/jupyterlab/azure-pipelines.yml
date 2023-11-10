@@ -20,7 +20,7 @@ variables:
 
 jobs:
   - job: deploy_staging
-    condition: ${{ eq(environment, 'staging') }}
+    condition: ${{ eq(variables.environment, 'staging') }}
     pool:
       name: jupyterhub-onprem-staging
       demands:
@@ -39,7 +39,7 @@ jobs:
           docker image prune --force
 
   - job: deploy_prod
-    condition: ${{ eq(environment, 'prod') }}
+    condition: ${{ eq(variables.environment, 'prod') }}
     pool:
       name: jupyterhub-onprem-prod
       demands:
