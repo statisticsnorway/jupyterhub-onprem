@@ -1,11 +1,9 @@
-parameters:
-  - name: imageTag
-    type: string
-  - name: environment
-    type: string
-    values:
-      - staging
-      - prod
+# INPUTS
+#
+# These are "magically" injected from Github Actions
+#
+# imageTag: (Mandatory) Tag to pull
+# environment: (Mandatory) Which environment to deploy to, must be one of: ["staging", "prod"]
 
 name: $(Build.SourceBranch)-$(date:yyyyMMdd)$(rev:.r)
 
@@ -14,11 +12,15 @@ trigger: none
 
 variables:
   - name: imageNameNexus
-    value: 'nexus.ssb.no:8439/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterlab'
+    value: 'nexus.ssb.no:8437/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterlab'
+  - name: imageTag
+    value: NOT_SET
+  - name: environment
+    value: NOT_SET
 
 jobs:
   - job: deploy_staging
-    condition: ${{ eq(parameters.environment, 'staging') }}
+    condition: ${{ eq(environment, 'staging') }}
     pool:
       name: jupyterhub-onprem-staging
       demands:
@@ -29,7 +31,7 @@ jobs:
       - script: |
           set -e
 
-          IMAGE=${{ variables.imageNameNexus }}:${{ parameters.imageTag }}
+          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
@@ -37,7 +39,7 @@ jobs:
           docker image prune --force
 
   - job: deploy_prod
-    condition: ${{ eq(parameters.environment, 'prod') }}
+    condition: ${{ eq(environment, 'prod') }}
     pool:
       name: jupyterhub-onprem-prod
       demands:
@@ -48,7 +50,7 @@ jobs:
       - script: |
           set -e
 
-          IMAGE=${{ variables.imageNameNexus }}:${{ parameters.imageTag }}
+          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
