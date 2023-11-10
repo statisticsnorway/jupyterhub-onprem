@@ -22,7 +22,7 @@ env:
   NAME: jupyterlab
 
 jobs:
-  docker:
+  jupyterlab-docker-build:
     permissions:
       contents: "read"
       id-token: "write"
@@ -75,3 +75,14 @@ jobs:
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ env.NAME }}:buildcache,mode=max
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+  deploy-on-prem:
+    needs: jupyterlab-docker-build
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Trigger the Azure Pipeline deploy job'
+      uses: Azure/pipelines@releases/v1
+      with:
+        azure-devops-project-url: 'https://dev.azure.com/statisticsnorway/Statistikktjenester'
+        azure-pipeline-name: 'unknown'
+        azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'

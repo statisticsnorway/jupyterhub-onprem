@@ -1,0 +1,38 @@
+parameters:
+- name: environment
+  displayName: Environment to deploy to
+  type: string
+  default: ubuntu-latest
+  values:
+  - staging
+  - prod
+
+name: $(Build.SourceBranch)-$(date:yyyyMMdd)$(rev:.r)
+
+# Triggered directly by Github Actions
+trigger: none
+
+variables:
+  - name: imageNameNexus
+    value: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterlab-onprem'
+  - name: imageTag
+    value: latest
+
+jobs:
+  - job: deploy
+    pool:
+      name: jupyterhub-onprem-${{ parameters.environment }}
+      demands:
+      - agent.name -equals ${{ parameters.environment }}-agent
+
+    displayName: "Deploying to ${{ parameters.environment }}"
+    steps:
+      - script: |
+          set -e
+
+          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force

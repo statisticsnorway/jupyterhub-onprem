@@ -21,7 +21,7 @@ env:
   NAME: jupyterhub
 
 jobs:
-  docker:
+  jupyterhub-docker-build:
     permissions:
       contents: "read"
       id-token: "write"
