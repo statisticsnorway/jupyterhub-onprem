@@ -2,7 +2,7 @@ parameters:
 - name: environment
   displayName: Environment to deploy to
   type: string
-  default: ubuntu-latest
+  default: staging
   values:
   - staging
   - prod
@@ -14,7 +14,7 @@ trigger: none
 
 variables:
   - name: imageNameNexus
-    value: 'nexus.ssb.no:8437/prod-bip/ssb/statistikktjenester/jupyterlab-onprem'
+    value: 'nexus.ssb.no:8439/artifact-registry-5n/dapla-stat-docker/jupyter/on-prem-jupyterlab'
   - name: imageTag
     value: latest
 
