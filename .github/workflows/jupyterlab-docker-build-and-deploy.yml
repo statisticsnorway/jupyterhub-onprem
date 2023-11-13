@@ -81,6 +81,7 @@ jobs:
   deploy-on-prem:
     needs: jupyterlab-docker-build
     runs-on: ubuntu-latest
+    if: success() && github.ref == 'refs/heads/main'
     env:
       DEPLOY_ENVIRONMENT: ${{ github.event_name == 'release' && 'prod' || 'staging' }}
       IMAGE_TAG: ${{ github.event_name == 'release' && needs.jupyterlab-docker-build.outputs.semver_image_tag || 'latest' }}
