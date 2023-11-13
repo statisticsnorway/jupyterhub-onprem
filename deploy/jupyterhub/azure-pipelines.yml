@@ -34,13 +34,6 @@ jobs:
       - script: |
           set -e
 
-          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
-          echo "Pulling $IMAGE"
-          docker pull $IMAGE
-
-          echo "Removing dangling images"
-          docker image prune --force
-
           REPO="$HOME/jupyterhub-onprem"
           if ! [ -d "$REPO" ]
           then
@@ -67,7 +60,15 @@ jobs:
 
           cd $REPO
           git pull
-          cp docker/jupyterhub/.env.staging ~/secrets/compose/.env
+          echo "Using tag $(imageTag)"
+          sed "s/<TAG>/$(imageTag)/g" docker/jupyterhub/.env.staging > ~/secrets/compose/.env
+
+          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force
 
           SERVICE_FILE=/etc/systemd/system/jupyterhub.service
           if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
@@ -121,10 +122,10 @@ jobs:
 
           cd $REPO
           git pull
-          echo "Using tag ${{ variables.imageTag }}"
-          sed "s/<TAG>/${{ variables.imageTag }}/g" docker/jupyterhub/.env.prod > ~/secrets/compose/.env
+          echo "Using tag $(imageTag)"
+          sed "s/<TAG>/$(imageTag)/g" docker/jupyterhub/.env.prod > ~/secrets/compose/.env
 
-          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
+          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
