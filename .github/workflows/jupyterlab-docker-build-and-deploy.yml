@@ -9,11 +9,12 @@ on:
     paths:
       - 'docker/jupyterlab/**'
       - '.github/workflows/jupyterlab-docker-build-and-deploy.yml'
+      - 'deploy/jupyterlab/azure-pipelines.yml'
   pull_request:
     paths:
       - 'docker/jupyterlab/**'
       - '.github/workflows/jupyterlab-docker-build-and-deploy.yml'
-
+      - 'deploy/jupyterlab/azure-pipelines.yml'
 env:
   REGISTRY: europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter
   TAG: ${{ github.ref_name }}-${{ github.sha }}
