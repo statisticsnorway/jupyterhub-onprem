@@ -19,7 +19,7 @@ trigger: none
 
 variables:
   - name: imageNameNexus
-    value: 'nexus.ssb.no:8437/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterlab'
+    value: 'nexus.ssb.no:8439/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterlab'
 
 jobs:
   - job: deploy_staging
