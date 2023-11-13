@@ -60,10 +60,10 @@ jobs:
 
           cd $REPO
           git pull
-          echo "Using tag $(imageTag)"
-          sed "s/<TAG>/$(imageTag)/g" docker/jupyterhub/.env.staging > ~/secrets/compose/.env
+          echo "Using tag $IMAGE_TAG"
+          sed "s/<TAG>/$IMAGE_TAG/g" docker/jupyterhub/.env.staging > ~/secrets/compose/.env
 
-          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
+          IMAGE=${{ variables.imageNameNexus }}:$IMAGE_TAG
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
@@ -84,6 +84,8 @@ jobs:
               echo "starting service."
               sudo systemctl start jupyterhub.service
           fi
+        env:
+          IMAGE_TAG: $(imageTag)
 
   - job: deploy_prod
     condition: ${{ eq(variables['environment'], 'prod') }}
@@ -122,10 +124,10 @@ jobs:
 
           cd $REPO
           git pull
-          echo "Using tag $(imageTag)"
-          sed "s/<TAG>/$(imageTag)/g" docker/jupyterhub/.env.prod > ~/secrets/compose/.env
+          echo "Using tag $IMAGE_TAG"
+          sed "s/<TAG>/$IMAGE_TAG/g" docker/jupyterhub/.env.prod > ~/secrets/compose/.env
 
-          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
+          IMAGE=${{ variables.imageNameNexus }}:$IMAGE_TAG
           echo "Pulling $IMAGE"
           docker pull $IMAGE
 
@@ -146,3 +148,5 @@ jobs:
               echo "starting service."
               sudo systemctl start jupyterhub.service
           fi
+        env:
+          IMAGE_TAG: $(imageTag)
