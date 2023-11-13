@@ -1,1 +1,147 @@
-# TODO
+# INPUTS
+#
+# These are "magically" injected from Github Actions.
+# They must be defined in the Azure Pipelines GUI as variables.
+#
+# imageTag: (Mandatory) Tag to pull
+# environment: (Mandatory) Which environment to deploy to, must be one of: ["staging", "prod"]
+#
+# From the documentation:
+# To allow a variable to be set at queue time, make sure the variable doesn't also
+# appear in the variables block of a pipeline or job. If you define a variable in
+# both the variables block of a YAML and in the UI, the value in the YAML will
+# have priority.
+
+name: $(Build.SourceBranch)-$(date:yyyyMMdd)$(rev:.r)
+
+# Triggered directly by Github Actions
+trigger: none
+
+variables:
+  - name: imageNameNexus
+    value: 'nexus.ssb.no:8439/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterhub'
+
+jobs:
+  - job: deploy_staging
+    condition: eq(variables['environment'], 'staging')
+    pool:
+      name: jupyterhub-onprem-staging
+      demands:
+      - agent.name -equals staging-agent
+
+    displayName: "Deploy to staging"
+    steps:
+      - script: |
+          set -e
+
+          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force
+
+          REPO="$HOME/jupyterhub-onprem"
+          if ! [ -d "$REPO" ]
+          then
+              echo "repo $REPO does not exist locally, cloning it."
+              git clone https://github.com/statisticsnorway/jupyterhub-onprem.git $REPO
+
+              echo "creating necessary directories for ssl and postgres assuming they don't already exist"
+              mkdir -p $HOME/secrets/ssl
+              mkdir -p $HOME/secrets/postgres
+              mkdir -p $HOME/secrets/compose
+
+              cd $REPO
+
+              echo "creating docker network for jupyterhub"
+              make network
+
+              echo "creating docker volumes for jupyterhub"
+              make volumes
+
+              echo "creating postgresql secret for jupyterhub"
+              make postgres-pw-gen
+
+          fi
+
+          cd $REPO
+          git pull
+          cp docker/jupyterhub/.env.staging ~/secrets/compose/.env
+
+          SERVICE_FILE=/etc/systemd/system/jupyterhub.service
+          if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
+              echo "Service files are the same, restarting service."
+              sudo systemctl restart jupyterhub.service
+          else
+              echo "Service file $SERVICE_FILE does not exist or is not equal to the recently pulled one."
+              sudo cp "$REPO/docker/jupyterhub/jupyterhub.service" "/etc/systemd/system/"
+
+              echo "enabling service."
+              sudo systemctl enable jupyterhub.service
+
+              echo "starting service."
+              sudo systemctl start jupyterhub.service
+          fi
+
+  - job: deploy_prod
+    condition: ${{ eq(variables['environment'], 'prod') }}
+    pool:
+      name: jupyterhub-onprem-prod
+      demands:
+      - agent.name -equals prod-agent
+
+    displayName: "Deploy to prod"
+    steps:
+      - script: |
+          set -e
+
+          REPO="$HOME/jupyterhub-onprem"
+          if ! [ -d "$REPO" ]
+          then
+              echo "repo $REPO does not exist locally, cloning it."
+              git clone https://github.com/statisticsnorway/jupyterhub-onprem.git $REPO
+
+              echo "creating necessary directories for ssl and postgres assuming they don't already exist"
+              mkdir -p $HOME/secrets/ssl
+              mkdir -p $HOME/secrets/postgres
+              mkdir -p $HOME/secrets/compose
+
+              cd $REPO
+
+              echo "creating docker network for jupyterhub"
+              make network
+
+              echo "creating docker volumes for jupyterhub"
+              make volumes
+
+              echo "creating postgresql secret for jupyterhub"
+              make postgres-pw-gen
+          fi
+
+          cd $REPO
+          git pull
+          echo "Using tag ${{ variables.imageTag }}"
+          sed "s/<TAG>/${{ variables.imageTag }}/g" docker/jupyterhub/.env.prod > ~/secrets/compose/.env
+
+          IMAGE=${{ variables.imageNameNexus }}:${{ variables.imageTag }}
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force
+
+          SERVICE_FILE=/etc/systemd/system/jupyterhub.service
+          if cmp -s -- "$SERVICE_FILE" "$REPO/docker/jupyterhub/jupyterhub.service"; then
+              echo "Service files are the same, restarting service."
+              sudo systemctl restart jupyterhub.service
+          else
+              echo "Service file $SERVICE_FILE does not exist or is not equal to the recently pulled one."
+              sudo cp "$REPO/docker/jupyterhub/jupyterhub.service" "/etc/systemd/system/"
+
+              echo "enabling service."
+              sudo systemctl enable jupyterhub.service
+
+              echo "starting service."
+              sudo systemctl start jupyterhub.service
+          fi
