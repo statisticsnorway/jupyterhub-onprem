@@ -17,11 +17,11 @@ on:
 env:
   REGISTRY: europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter
   TAG: ${{ github.ref_name }}-${{ github.sha }}
-  IMAGE_PREFIX: on-prem-
+  IMAGE_PREFIX: onprem-
   NAME: jupyterhub
 
 jobs:
-  docker:
+  jupyterhub-docker-build:
     permissions:
       contents: "read"
       id-token: "write"

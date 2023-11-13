@@ -1,0 +1,61 @@
+# INPUTS
+#
+# These are "magically" injected from Github Actions.
+# They must be defined in the Azure Pipelines GUI as variables.
+#
+# imageTag: (Mandatory) Tag to pull
+# environment: (Mandatory) Which environment to deploy to, must be one of: ["staging", "prod"]
+#
+# From the documentation:
+# To allow a variable to be set at queue time, make sure the variable doesn't also
+# appear in the variables block of a pipeline or job. If you define a variable in
+# both the variables block of a YAML and in the UI, the value in the YAML will
+# have priority.
+
+name: $(Build.SourceBranch)-$(date:yyyyMMdd)$(rev:.r)
+
+# Triggered directly by Github Actions
+trigger: none
+
+variables:
+  - name: imageNameNexus
+    value: 'nexus.ssb.no:8437/artifact-registry-5n/dapla-stat-docker/jupyter/onprem-jupyterlab'
+
+jobs:
+  - job: deploy_staging
+    condition: eq(variables['environment'], 'staging')
+    pool:
+      name: jupyterhub-onprem-staging
+      demands:
+      - agent.name -equals staging-agent
+
+    displayName: "Deploy to staging"
+    steps:
+      - script: |
+          set -e
+
+          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force
+
+  - job: deploy_prod
+    condition: ${{ eq(variables['environment'], 'prod') }}
+    pool:
+      name: jupyterhub-onprem-prod
+      demands:
+      - agent.name -equals prod-agent
+
+    displayName: "Deploy to prod"
+    steps:
+      - script: |
+          set -e
+
+          IMAGE=${{ variables.imageNameNexus }}:$(imageTag)
+          echo "Pulling $IMAGE"
+          docker pull $IMAGE
+
+          echo "Removing dangling images"
+          docker image prune --force
