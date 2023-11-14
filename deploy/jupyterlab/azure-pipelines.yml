@@ -42,7 +42,7 @@ jobs:
           docker image prune --force
 
   - job: deploy_prod
-    condition: ${{ eq(variables['environment'], 'prod') }}
+    condition: eq(variables['environment'], 'prod')
     pool:
       name: jupyterhub-onprem-prod
       demands:
