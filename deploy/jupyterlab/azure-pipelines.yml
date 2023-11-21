@@ -16,6 +16,7 @@ name: $(Build.SourceBranch)-$(date:yyyyMMdd)$(rev:.r)
 
 # Triggered directly by Github Actions
 trigger: none
+pr: none
 
 variables:
   - name: imageNameNexus
