@@ -128,5 +128,8 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/21/client64/lib
 
 # Add conda lib to LD_LIBRARY_PATH
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib
+# Set Dapla environment variables used to identify the service.
+ENV DAPLA_SERVICE=JUPYTERLAB
+ENV DAPLA_REGION=ON_PREM
 
 USER $NB_UID

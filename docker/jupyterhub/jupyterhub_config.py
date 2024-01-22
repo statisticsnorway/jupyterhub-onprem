@@ -108,4 +108,5 @@ c.DockerSpawner.environment = {
     # Set the hostname of the server. We use this environment variable to match with the
     # one used in Dapla Jupyterhub.
     "JUPYTERHUB_HTTP_REFERER": os.environ.get("JUPYTERHUB_HTTP_REFERER", "UNKNOWN"),
+    "DAPLA_ENVIRONMENT": os.environ.get("DAPLA_ENVIRONMENT", "UNKNOWN"),
 }
