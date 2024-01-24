@@ -55,6 +55,7 @@ services:
       STATBANK_ENCRYPT_URL: http://statbank-authenticator:8080/encrypt
       STATBANK_BASE_URL: ${STATBANK_BASE_URL}
       JUPYTERHUB_HTTP_REFERER: ${JUPYTERHUB_HTTP_REFERER}
+      DAPLA_ENVIRONMENT: ${DAPLA_ENVIRONMENT}
     env_file:
       - ~/secrets/postgres/postgres.env
     command: >
