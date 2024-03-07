@@ -22,7 +22,7 @@ RUN apt update && \
     # libaio required by oracle 64-bit client
     apt-get install -y libaio1 libaio-dev && \
     # STAT-569 - rJava issue onprem
-    apt-get install libbz2-dev && \
+    apt-get -y install libbz2-dev && \
     # Adding fonts required for tidyverse and other R dependencies
     apt-get install -y libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libharfbuzz-dev libfribidi-dev && \
     apt autoremove -y && \
