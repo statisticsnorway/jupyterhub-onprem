@@ -115,6 +115,9 @@ RUN mkdir "/usr/local/bin/start-notebook.d" && \
 
 # Set FELLES environment variable
 ENV FELLES=/ssb/bruker/felles
+ENV ARROW_THIRDPARTY_DEPENDENCY_DIR=$FELLES/R_pakker/arrow
+ENV ARROW_GCS=OFF
+ENV DARROW_S3=OFF
 
 # Adding pythonForSsb in PYTHONPATH
 ENV PYTHONPATH=$PYTHONPATH:/ssb/bruker/felles/pythonForSsb
