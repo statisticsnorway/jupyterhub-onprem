@@ -29,12 +29,12 @@ RUN apt update && \
     apt-get -y clean all
 
 # Installing oracle-instantclient components using alien
-RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm && \
+RUN alien --scripts -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
+    alien --scripts -i /tmp/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm && \
+    alien --scripts -i /tmp/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm && \
+    alien --scripts -i /tmp/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm && \
+    alien --scripts -i /tmp/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm && \
+    alien --scripts -i /tmp/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm && \
     rm -rf /tmp/oracle-instantclient-*
 
 # add tnsnames.ora to oracle path
