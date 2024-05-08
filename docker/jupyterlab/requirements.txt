@@ -1,4 +1,4 @@
-dapla-toolbelt==2.0.12
+dapla-toolbelt==2.0.13
 ssb-project-cli==1.3.9
 dapla-team-cli==0.3.6
 kvakk-git-tools==2.2.2
