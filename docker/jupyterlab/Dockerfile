@@ -31,10 +31,15 @@ RUN apt update && \
 # Installing oracle-instantclient components using alien
 RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
     alien -i /tmp/oracle-instantclient-devel-21.6.0.0.0-1.x86_64.rpm && \
-    alien -i /tmp/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm && \
     alien -i /tmp/oracle-instantclient-odbc-21.6.0.0.0-1.x86_64.rpm && \
     alien -i /tmp/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm && \
     alien -i /tmp/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm && \
+    # Must install sqlplus seperately because of an issue installing using alien
+    cd /tmp && \
+    rpm2cpio /tmp/oracle-instantclient-sqlplus-21.6.0.0.0-1.x86_64.rpm | cpio -idmv && \
+    sudo cp -r /tmp/usr/* /usr/ && \
+    rm -rf /tmp/usr && \
+    ldconfig && \
     rm -rf /tmp/oracle-instantclient-*
 
 # add tnsnames.ora to oracle path
