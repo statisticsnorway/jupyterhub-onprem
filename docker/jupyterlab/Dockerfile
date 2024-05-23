@@ -50,9 +50,21 @@ ENV OCI_INC /usr/include/oracle/21/client64
 ENV OCI_LIB /usr/lib/oracle/21/client64/lib
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
-# Install R packages that are not available as Ubuntu packages, and is only needed on-premises
+# Copy the requirements.txt file into the container
+COPY ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz /tmp/ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz
+
+# ----
+# Keeping this here because we will need to revert when ROracle has pushed fix out to the public 
+#RUN R CMD javareconf && \
+#    R -e "install.packages('ROracle', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')"
+# ----
+
+# Install ROracle manually from tar.gz
 RUN R CMD javareconf && \
-    R -e "install.packages('ROracle', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')"
+    R -e "install.packages('/tmp/ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz', repos = NULL, type='source')"
+
+# Remove ROracle tar.gz
+RUN rm -f /tmp/ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz
 
 USER $NB_UID
 
