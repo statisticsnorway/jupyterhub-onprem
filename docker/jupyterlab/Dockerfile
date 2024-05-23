@@ -50,7 +50,7 @@ ENV OCI_INC /usr/include/oracle/21/client64
 ENV OCI_LIB /usr/lib/oracle/21/client64/lib
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
-# Copy the requirements.txt file into the container
+# Copy the ROracle installation file into the container
 COPY ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz /tmp/ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz
 
 # ----
