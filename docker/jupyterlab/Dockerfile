@@ -21,6 +21,8 @@ RUN apt update && \
     apt-get install -y iputils-ping && \
     # libaio required by oracle 64-bit client
     apt-get install -y libaio1 libaio-dev && \
+    # Install libgit2
+    apt-get install -y libgit2-dev && \
     # STAT-569 - rJava issue onprem
     apt-get -y install libbz2-dev && \
     # Adding fonts required for tidyverse and other R dependencies
