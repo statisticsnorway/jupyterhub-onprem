@@ -15,7 +15,6 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/ora
     wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm -P /tmp/
 
 RUN apt update && \
-    apt-get dist-upgrade -y && \
     # alien is used to convert .rpms to .deb packages
     apt-get install -y alien && \
     # Installing ping
@@ -28,6 +27,8 @@ RUN apt update && \
     apt-get -y install libbz2-dev && \
     # Adding fonts required for tidyverse and other R dependencies
     apt-get install -y libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libharfbuzz-dev libfribidi-dev && \
+    apt-get install -y libarrow-dev libarrow-glib-dev libarrow-dataset-dev libarrow-dataset-glib-dev libarrow-acero-dev libarrow-flight-dev libarrow-flight-glib-dev \
+    libarrow-flight-sql-dev libarrow-flight-sql-glib-dev libgandiva-dev libgandiva-glib-dev libparquet-dev libparquet-glib-dev && \
     apt autoremove -y && \
     apt-get -y clean all
 
