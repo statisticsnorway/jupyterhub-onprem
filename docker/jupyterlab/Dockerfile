@@ -27,8 +27,8 @@ RUN apt update && \
     apt-get -y install libbz2-dev && \
     # Adding fonts required for tidyverse and other R dependencies
     apt-get install -y libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libharfbuzz-dev libfribidi-dev && \
-    # Update all packages ensuring that the latest versions are installed
-    apt-get upgrade -y && \
+    apt-get install -y libarrow-dev libarrow-glib-dev libarrow-dataset-dev libarrow-dataset-glib-dev libarrow-acero-dev libarrow-flight-dev libarrow-flight-glib-dev \
+    libarrow-flight-sql-dev libarrow-flight-sql-glib-dev libgandiva-dev libgandiva-glib-dev libparquet-dev libparquet-glib-dev && \
     apt autoremove -y && \
     apt-get -y clean all
 
