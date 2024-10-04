@@ -17,7 +17,7 @@ on:
       - 'deploy/jupyterhub/azure-pipelines.yml'
 
 env:
-  REGISTRY: europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter
+  REGISTRY: europe-north1-docker.pkg.dev/artifact-registry-5n/itinfra-onprem/jupyter
   TAG: ${{ github.ref_name }}-${{ github.sha }}
   IMAGE_PREFIX: onprem-
   NAME: jupyterhub
