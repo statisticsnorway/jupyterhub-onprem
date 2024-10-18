@@ -35,10 +35,10 @@ RUN apt-get update -y \
     && apt-get -y clean all \
     && rm -rf /var/lib/apt/lists/*
 
-ENV R_HOME /usr/lib/R
-ENV R_LIBS_USER /usr/lib/R/library
+ENV R_HOME=/usr/lib/R
+ENV R_LIBS_USER=/usr/lib/R/library
 # https://cran.r-project.org/web/packages/arrow/vignettes/install.html
-ENV NOT_CRAN true
+ENV NOT_CRAN=true
 ENV ARROW_GCS=ON
 
 
@@ -204,8 +204,8 @@ RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
 RUN ln -s /ssb/share/etc/tnsnames.ora /usr/lib/oracle/21/client64/lib/network/tnsnames.ora
 
 # required to build ROracle
-ENV OCI_INC /usr/include/oracle/21/client64
-ENV OCI_LIB /usr/lib/oracle/21/client64/lib
+ENV OCI_INC=/usr/include/oracle/21/client64
+ENV OCI_LIB=/usr/lib/oracle/21/client64/lib
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
 # Copy the ROracle installation file into the container
