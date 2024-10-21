@@ -112,7 +112,7 @@ RUN chmod +x /opt/conda/share/jupyter/kernels/ir/r.sh
 COPY Rprofile.site /etc/R/Rprofile.site
 
 # User will not be able to install packages outside of a virtual environment
-ENV PIP_REQUIRE_VIRTUALENV=true
+ENV PIP_REQUIRE_VIRTUALENV=false
 
 # Setting up environment variables for pip and pipenv
 # Pip config so users install from Nexus.
