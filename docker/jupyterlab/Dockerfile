@@ -119,10 +119,10 @@ ENV PIP_REQUIRE_VIRTUALENV=true
 ENV PIP_INDEX=https://pypi.org/pypi
 ENV PIP_INDEX_URL=https://pypi.org/simple
 ENV PIPENV_PYPI_MIRROR=$PIP_INDEX_URL
-ENV PIP_TRUSTED_HOST=https://pypi.org
+ENV PIP_TRUSTED_HOST=pypi.org
 RUN pip config set global.index https://pypi.org/pypi --global && \
     pip config set global.index-url https://pypi.org/simple --global && \
-    pip config set global.trusted-host https://pypi.org --global
+    pip config set global.trusted-host pypi.org --global
 
 # Use proxy for https connections
 ENV https_proxy=http://proxy.ssb.no:3128
