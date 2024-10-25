@@ -116,13 +116,13 @@ ENV PIP_REQUIRE_VIRTUALENV=true
 
 # Setting up environment variables for pip and pipenv
 # Pip config so users install from Nexus.
-ENV PIP_INDEX=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi
-ENV PIP_INDEX_URL=http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple
+ENV PIP_INDEX=https://pypi.org/pypi
+ENV PIP_INDEX_URL=https://pypi.org/simple
 ENV PIPENV_PYPI_MIRROR=$PIP_INDEX_URL
-ENV PIP_TRUSTED_HOST=pl-nexuspro-p.ssb.no
-RUN pip config set global.index http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/pypi --global && \
-    pip config set global.index-url http://pl-nexuspro-p.ssb.no:8081/repository/pypi-proxy/simple --global && \
-    pip config set global.trusted-host pl-nexuspro-p.ssb.no --global
+ENV PIP_TRUSTED_HOST=pypi.org
+RUN pip config set global.index https://pypi.org/pypi --global && \
+    pip config set global.index-url https://pypi.org/simple --global && \
+    pip config set global.trusted-host pypi.org --global
 
 # Use proxy for https connections
 ENV https_proxy=http://proxy.ssb.no:3128
