@@ -15,7 +15,7 @@ c.JupyterHub.spawner_class = "dockerspawner.SystemUserSpawner"
 c.PAMAuthenticator.pam_normalize_username = True
 
 # Add admin users
-c.PAMAuthenticator.admin_groups = {"wheel", "RBAG_jupyterhub_admins@ssb.no"}
+c.PAMAuthenticator.admin_groups = {"RBAG_jupyterhub_admins@ssb.no"}
 
 # Remove users that are no longer able to authenticate
 c.Authenticator.delete_invalid_users = True
