@@ -1,5 +1,6 @@
 # Locking ourselves to this base_image to avoid breaking changes in the future
 ARG base_image="europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter/jupyterlab-common@sha256:0221fabe6d88704ab1396852cdfe224887b8ba0893577ba7d007b0cfd5c2b621"
+
 FROM ${base_image}
 
 USER root
