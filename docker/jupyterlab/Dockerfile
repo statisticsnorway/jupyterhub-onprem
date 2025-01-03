@@ -1,6 +1,5 @@
 # Locking ourselves to this base_image to avoid breaking changes in the future
 ARG base_image="europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter/jupyterlab-common@sha256:0221fabe6d88704ab1396852cdfe224887b8ba0893577ba7d007b0cfd5c2b621"
-
 FROM ${base_image}
 
 USER root
@@ -16,6 +15,8 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/ora
     wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
     wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm -P /tmp/
 
+ARG libarrow_version="17.0.0"
+
 RUN apt update && \
     # alien is used to convert .rpms to .deb packages
     apt-get install -y alien && \
@@ -29,8 +30,15 @@ RUN apt update && \
     apt-get -y install libbz2-dev && \
     # Adding fonts required for tidyverse and other R dependencies
     apt-get install -y libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libharfbuzz-dev libfribidi-dev && \
-    apt-get install -y libarrow-dev libarrow-glib-dev libarrow-dataset-dev libarrow-dataset-glib-dev libarrow-acero-dev libarrow-flight-dev libarrow-flight-glib-dev \
+    apt-get purge -y libarrow-dev libarrow-glib-dev libarrow-dataset-dev libarrow-dataset-glib-dev libarrow-acero-dev libarrow-flight-dev libarrow-flight-glib-dev \
     libarrow-flight-sql-dev libarrow-flight-sql-glib-dev libgandiva-dev libgandiva-glib-dev libparquet-dev libparquet-glib-dev && \
+    # installing libarrow with a dynamic version
+    apt-get install -y libarrow-dev=${libarrow_version}-1 libarrow-glib-dev=${libarrow_version}-1 libarrow-dataset-dev=${libarrow_version}-1 \ 
+    libarrow-dataset-glib-dev=${libarrow_version}-1 libarrow-acero-dev=${libarrow_version}-1 libarrow-flight-dev=${libarrow_version}-1 \ 
+    libarrow-flight-glib-dev=${libarrow_version}-1 libarrow-flight-sql-dev=${libarrow_version}-1 libarrow-flight-sql-glib-dev=${libarrow_version}-1 \ 
+    gir1.2-arrow-dataset-1.0=${libarrow_version}-1 gir1.2-arrow-flight-1.0=${libarrow_version}-1 gir1.2-arrow-flight-sql-1.0=${libarrow_version}-1 \ 
+    gir1.2-arrow-1.0=${libarrow_version}-1 gir1.2-gandiva-1.0=${libarrow_version}-1 gir1.2-parquet-1.0=${libarrow_version}-1   \ 
+    libgandiva-dev=${libarrow_version}-1 libgandiva-glib-dev=${libarrow_version}-1 libparquet-dev=${libarrow_version}-1 libparquet-glib-dev=${libarrow_version}-1 && \
     apt autoremove -y && \
     apt-get -y clean all
 
