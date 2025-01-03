@@ -70,7 +70,8 @@ jobs:
           context: docker/${{ env.NAME }}
           file: docker/${{ env.NAME }}/Dockerfile
           push: true
-          build-args: base_image=${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}
+          # build-args: base_image=${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}
+          build-args: base_image=europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter/jupyterlab-common@sha256:0221fabe6d88704ab1396852cdfe224887b8ba0893577ba7d007b0cfd5c2b621
           tags: |
             ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
