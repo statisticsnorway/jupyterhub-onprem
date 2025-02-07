@@ -15,7 +15,7 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/ora
     wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
     wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm -P /tmp/
 
-ARG libarrow_version="17.0.0"
+ARG libarrow_version="18.0.0"
 
 RUN apt update && \
     # alien is used to convert .rpms to .deb packages
@@ -80,6 +80,10 @@ RUN R CMD javareconf && \
 # Remove ROracle tar.gz
 RUN rm -f /tmp/ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz
 
+USER root
+
+RUN python3 -m pip install ipydatagrid
+
 USER $NB_UID
 
 # Copy the requirements.txt file into the container
@@ -90,6 +94,12 @@ RUN echo "**** install cx-Oracle ****" && \
     python3 -m pip install saspy && \
     echo "**** install Dapla tools ****" && \
     python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
+    echo "**** install Poetry shell ****" && \
+    python3 -m pip install poetry-plugin-shell && \
+    echo "**** install nox poetry ****" && \
+    python3 -m pip install nox-poetry && \
+    echo "**** install nox ****" && \
+    python3 -m pip install nox && \
     python3 -m pip cache purge && \
     conda clean --all -y && \
     jupyter lab clean
