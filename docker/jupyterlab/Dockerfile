@@ -15,7 +15,7 @@ RUN wget https://download.oracle.com/otn_software/linux/instantclient/216000/ora
     wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-jdbc-21.6.0.0.0-1.x86_64.rpm -P /tmp/ && \
     wget https://download.oracle.com/otn_software/linux/instantclient/216000/oracle-instantclient-tools-21.6.0.0.0-1.x86_64.rpm -P /tmp/
 
-ARG libarrow_version="18.0.0"
+ARG libarrow_version="18.1.0"
 
 RUN apt update && \
     # alien is used to convert .rpms to .deb packages
@@ -83,6 +83,8 @@ RUN rm -f /tmp/ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz
 USER root
 
 RUN python3 -m pip install ipydatagrid
+# Installing this dependency for having igraph
+RUN apt-get install -y libopenblas-dev
 
 USER $NB_UID
 
@@ -170,8 +172,6 @@ ENV ORACLE_HOME=/usr/lib/oracle/21/client64
 ENV TNS_ADMIN=/usr/lib/oracle/21/client64/lib/network
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/oracle/21/client64/lib
 
-# Add conda lib to LD_LIBRARY_PATH
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib
 # Set Dapla environment variables used to identify the service.
 ENV DAPLA_SERVICE=JUPYTERLAB
 ENV DAPLA_REGION=ON_PREM
