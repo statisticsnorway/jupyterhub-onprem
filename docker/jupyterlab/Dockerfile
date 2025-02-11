@@ -86,6 +86,7 @@ RUN python3 -m pip install ipydatagrid
 # Installing this dependency for having igraph
 RUN apt-get install -y libopenblas-dev
 
+
 RUN R -e "install.packages('igraph', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
     R -e "remotes::install_github('statisticsnorway/ssb-pickmdl')" && \
     R -e "install.packages('dggridR', repos='https://packagemanager.rstudio.com/cran/latest')" && \
