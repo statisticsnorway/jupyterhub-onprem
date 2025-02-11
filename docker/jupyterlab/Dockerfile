@@ -152,14 +152,14 @@ RUN pip config set global.index https://pypi.org/pypi --global && \
     pip config set global.trusted-host pypi.org --global
 
 # Use proxy for https connections
-# ENV https_proxy=http://proxy.ssb.no:3128
-# ENV no_proxy=nexus.ssb.no,git-adm.ssb.no,i.test.ssb.no,i.ssb.no,i.qa.ssb.no,data.ssb.no,github.com,api.github.com,codeload.github.com
+ENV https_proxy=http://proxy.ssb.no:3128
+ENV no_proxy=nexus.ssb.no,git-adm.ssb.no,i.test.ssb.no,i.ssb.no,i.qa.ssb.no,data.ssb.no,github.com,api.github.com,codeload.github.com
 
 # Pull and update ca-certificates
-# RUN mkdir "/usr/local/bin/start-notebook.d" && \
-#     echo "curl https://nexus.ssb.no/repository/certificate_repo/ssb/cert_Decrypt-CA.crt --output /usr/local/share/ca-certificates/cert_Decrypt-CA.crt" > /usr/local/bin/start-notebook.d/update-certificate.sh && \
-#     echo "update-ca-certificates" >> /usr/local/bin/start-notebook.d/update-certificate.sh && \
-#     chmod +x /usr/local/bin/start-notebook.d/update-certificate.sh
+RUN mkdir "/usr/local/bin/start-notebook.d" && \
+    echo "curl https://nexus.ssb.no/repository/certificate_repo/ssb/cert_Decrypt-CA.crt --output /usr/local/share/ca-certificates/cert_Decrypt-CA.crt" > /usr/local/bin/start-notebook.d/update-certificate.sh && \
+    echo "update-ca-certificates" >> /usr/local/bin/start-notebook.d/update-certificate.sh && \
+    chmod +x /usr/local/bin/start-notebook.d/update-certificate.sh
 
 # Set FELLES environment variable
 ENV FELLES=/ssb/bruker/felles
