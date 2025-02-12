@@ -87,11 +87,47 @@ RUN python3 -m pip install ipydatagrid
 RUN apt-get install -y libopenblas-dev
 
 
-RUN R -e "install.packages('igraph', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+# Running this to update and add packages from last push
+RUN R -e "install.packages('tidyfst', repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('configr', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('DBI', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('renv', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('arrow', dependencies=FALSE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('leaflet', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('getPass', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('googleCloudStorageR', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('DT', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('rjwsacruncher', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('sf', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('sfarrow', dependencies=FALSE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('dbplyr', dependencies=FALSE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('shiny', dependencies=FALSE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('rstudioapi', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('httr', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('readr', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('knitr', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('rmarkdown', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('Rcurl', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('here', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('esquisse', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('dcmodify', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('simputation', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('SmallCountRounding', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('klassR', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('pxwebapidata', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "install.packages('gissb', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
+    R -e "remotes::install_github('statisticsnorway/ssb-pris')" && \
+    R -e "remotes::install_github('statisticsnorway/ssb-gausssuppression')" && \
+    R -e "remotes::install_github('statisticsnorway/ssb-fellesr')" && \
+    R -e "remotes::install_github('statisticsnorway/ssb-kostra')" && \
+    R -e "remotes::install_github('statisticsnorway/ssb-SdcForetakPerson')" && \
+    R -e "remotes::install_github('statisticsnorway/ssb-struktuR')" && \
+    R -e "remotes::install_github('statisticsnorway/ssb-SSBtools')" && \
+    R -e "remotes::install_github('statisticsnorway/ReGenesees')" && \
+    R -e "install.packages('igraph', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
     R -e "remotes::install_github('statisticsnorway/ssb-pickmdl')" && \
-    R -e "install.packages('dggridR', repos='https://packagemanager.rstudio.com/cran/latest')" && \
-    R -e "install.packages('tidyfst', repos='https://packagemanager.rstudio.com/cran/latest')"
-
+    R -e "install.packages('dggridR', repos='https://packagemanager.rstudio.com/cran/latest')"
+ 
 USER $NB_UID
 
 # Copy the requirements.txt file into the container
