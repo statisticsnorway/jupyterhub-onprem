@@ -42,8 +42,10 @@ RUN apt update && \
     apt autoremove -y && \
     apt-get -y clean all
     
-# Installing this dependency for having igraph, Rglpk and pdftools
-RUN apt-get install -y libopenblas-dev libglpk-dev libpoppler-cpp-dev
+
+# Installing this dependency for having igraph, Rglpk, pdftools and V8
+RUN apt-get install -y libopenblas-dev libglpk-dev libpoppler-cpp-dev libv8-dev libnode-dev
+
 
 # Installing oracle-instantclient components using alien
 RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
