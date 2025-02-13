@@ -41,6 +41,9 @@ RUN apt update && \
     libgandiva-dev=${libarrow_version}-1 libgandiva-glib-dev=${libarrow_version}-1 libparquet-dev=${libarrow_version}-1 libparquet-glib-dev=${libarrow_version}-1 && \
     apt autoremove -y && \
     apt-get -y clean all
+    
+# Installing this dependency for having igraph, Rglpk and pdftools
+RUN apt-get install -y libopenblas-dev libglpk-dev libpoppler-cpp-dev
 
 # Installing oracle-instantclient components using alien
 RUN alien -i /tmp/oracle-instantclient-basic-21.6.0.0.0-1.x86_64.rpm && \
@@ -81,10 +84,8 @@ RUN R CMD javareconf && \
 RUN rm -f /tmp/ROracle_1.4-1_R_x86_64-unknown-linux-gnu.tar.gz
 
 USER root
-
+# install ipydatagrid for python via pip as root
 RUN python3 -m pip install ipydatagrid
-# Installing this dependency for having igraph
-RUN apt-get install -y libopenblas-dev
 
 # Running this to update and add packages from last push
 RUN R -e "install.packages('tidyfst', repos='https://packagemanager.rstudio.com/cran/latest')" && \
@@ -126,7 +127,7 @@ RUN R -e "install.packages('tidyfst', repos='https://packagemanager.rstudio.com/
     R -e "install.packages('igraph', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
     R -e "remotes::install_github('statisticsnorway/ssb-pickmdl')" && \
     R -e "install.packages('dggridR', repos='https://packagemanager.rstudio.com/cran/latest')"
- 
+
 USER $NB_UID
 
 # Copy the requirements.txt file into the container
