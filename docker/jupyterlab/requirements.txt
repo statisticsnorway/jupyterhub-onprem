@@ -5,4 +5,4 @@ kvakk-git-tools==2.4.1
 # nbstripout==0.8.1 #added after request by aei
 poetry==2.0.1 #added after request by aei
 cruft[pyproject]==2.16.0 #added after request by aei
-nox==2024.10.9 #added after request by aei
+nox==2025.2.9 #added after request by aei
