@@ -2,6 +2,33 @@
 ARG base_image="europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter/jupyterlab-common@sha256:0221fabe6d88704ab1396852cdfe224887b8ba0893577ba7d007b0cfd5c2b621"
 FROM ${base_image}
 
+
+USER $NB_UID
+
+# Copy the requirements.txt file into the container
+COPY requirements.txt /tmp/requirements.txt
+
+RUN echo "**** install cx-Oracle ****" && \
+    python3 -m pip install cx-Oracle && \
+    python3 -m pip install saspy && \
+    echo "**** install Dapla tools ****" && \
+    python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
+    echo "**** install Poetry shell ****" && \
+    python3 -m pip install poetry-plugin-shell && \
+    echo "**** install nox poetry ****" && \
+    python3 -m pip install nox-poetry && \
+    echo "**** install nox ****" && \
+    python3 -m pip install nox && \
+    python3 -m pip cache purge && \
+    conda clean --all -y && \
+    jupyter lab clean
+
+# Set template version for ssb-project-cli (https://github.com/statisticsnorway/ssb-project-template-stat)
+ENV STAT_TEMPLATE_DEFAULT_REFERENCE="1.1.7"
+
+# required by dapla team cli
+ENV DAPLA_TEAM_API_BASE_URL="http://dapla-team-api.dapla.svc.cluster.local/"
+
 USER root
 
 ENV R_HOME /usr/lib/R
@@ -130,34 +157,6 @@ RUN R -e "install.packages('tidyfst', repos='https://packagemanager.rstudio.com/
     R -e "install.packages('igraph', dependencies=TRUE, repos='https://packagemanager.rstudio.com/cran/latest')" && \
     R -e "remotes::install_github('statisticsnorway/ssb-pickmdl')" && \
     R -e "install.packages('dggridR', repos='https://packagemanager.rstudio.com/cran/latest')"
-
-USER $NB_UID
-
-# Copy the requirements.txt file into the container
-COPY requirements.txt /tmp/requirements.txt
-
-RUN echo "**** install cx-Oracle ****" && \
-    python3 -m pip install cx-Oracle && \
-    python3 -m pip install saspy && \
-    echo "**** install Dapla tools ****" && \
-    python3 -m pip install --no-cache-dir -r /tmp/requirements.txt && \
-    echo "**** install Poetry shell ****" && \
-    python3 -m pip install poetry-plugin-shell && \
-    echo "**** install nox poetry ****" && \
-    python3 -m pip install nox-poetry && \
-    echo "**** install nox ****" && \
-    python3 -m pip install nox && \
-    python3 -m pip cache purge && \
-    conda clean --all -y && \
-    jupyter lab clean
-
-# Set template version for ssb-project-cli (https://github.com/statisticsnorway/ssb-project-template-stat)
-ENV STAT_TEMPLATE_DEFAULT_REFERENCE="1.1.7"
-
-# required by dapla team cli
-ENV DAPLA_TEAM_API_BASE_URL="http://dapla-team-api.dapla.svc.cluster.local/"
-
-USER root
 
 # Allowing usage of stamme_variabler in the terminal
 # stamme_variabler is also useable in the kernels as
