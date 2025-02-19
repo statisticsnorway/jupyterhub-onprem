@@ -1,5 +1,5 @@
 dapla-toolbelt==3.2.2
-ssb-project-cli==1.4.7
+ssb-project-cli==1.5.0
 dapla-team-cli==0.3.6
 kvakk-git-tools==2.4.1
 # nbstripout==0.8.1 #added after request by aei
