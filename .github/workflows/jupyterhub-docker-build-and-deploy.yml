@@ -1,95 +1,99 @@
-name: Jupyterhub Docker Build and Deploy
+# This workflow will build and push a new Docker image to the default Artifact Registry in SSB.
+#
+# Overview:
+# 1. Authenticate to Google Cloud
+# 2. Authenticate to Artifact Registry
+# 3. Build and publish a docker image to Google Artifact Registry
+# 
+# To configure this workflow:
+# 1. Change the values for the IMAGE_NAME_HUB and TEAM_NAME environment variables (below).
+# 2. The image will be tagged with the git commit hash and latest. To override the default tags, add tags to the build_metadata step.
+#
+# This workflow is tailored for SSB´s setup, however if you wish to use this in a non SSB context ensure/change the following:
+# 1. Create GitHub secrets for GAR_PROJECT_NUMBER and GAR_PROJECT_ID (Number and ID for the Artifact Registry project).
+# 2. Create and configure Workload Identity Federation for GitHub.
+
+name: JupyterHub Docker Build
 
 on:
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Force build even without changes'
+        required: false
+        default: false
+        type: boolean
   release:
     types: [published]
   push:
     branches:
       - "main"
-    paths:
+    paths: 
       - 'docker/jupyterhub/**'
       - '.github/workflows/jupyterhub-docker-build-and-deploy.yml'
-      - 'deploy/jupyterhub/azure-pipelines.yml'
   pull_request:
-    paths:
+    paths: 
       - 'docker/jupyterhub/**'
       - '.github/workflows/jupyterhub-docker-build-and-deploy.yml'
-      - 'deploy/jupyterhub/azure-pipelines.yml'
 
 env:
-  REGISTRY: europe-north1-docker.pkg.dev/artifact-registry-5n/dapla-stat-docker/jupyter
+  REGISTRY: europe-north1-docker.pkg.dev/${{ secrets.GAR_PROJECT_ID }}
+  IMAGE_NAME_HUB: onprem-jupyterhub-legacy
+  TEAM_NAME: itinfra-bakkesyst
   TAG: ${{ github.ref_name }}-${{ github.sha }}
-  IMAGE_PREFIX: onprem-
-  NAME: jupyterhub
 
 jobs:
   jupyterhub-docker-build:
+    name: Build JupyterHub Docker Image
     permissions:
       contents: "read"
       id-token: "write"
     runs-on: ubuntu-latest
-    outputs:
-      semver_image_tag: ${{ steps.metadata.outputs.version }}
-    steps:
-      - name: "Check out repo"
-        uses: actions/checkout@v3
-      - name: "Authenticate to Google Cloud"
-        id: "auth"
-        uses: "google-github-actions/auth@v1.1.1"
-        with:
-          workload_identity_provider: "projects/848539402404/locations/global/workloadIdentityPools/gh-actions/providers/gh-actions"
-          service_account: "gh-actions-dapla-stat@artifact-registry-5n.iam.gserviceaccount.com"
-          token_format: "access_token"
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: "oauth2accesstoken"
-          password: "${{ steps.auth.outputs.access_token }}"
-      - name: Docker meta
-        id: metadata
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ env.NAME }}
-          # Docker tags based on the following events/attributes
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=semver,pattern=v{{version}}
-            type=semver,pattern=v{{major}}.{{minor}}
-            type=semver,pattern=v{{major}}
-            type=raw,value=${{ env.TAG }}, enable=true
-      - name: Build and push image
-        id: docker_build
-        uses: docker/build-push-action@v4
-        with:
-          context: docker/${{ env.NAME }}
-          file: docker/${{ env.NAME }}/Dockerfile
-          push: true
-          tags: |
-            ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ env.NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}${{ env.NAME }}:buildcache,mode=max
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
 
-  deploy-on-prem:
-    needs: jupyterhub-docker-build
-    runs-on: ubuntu-latest
-    if: success() && (github.ref == 'refs/heads/main' || github.event_name == 'release')
-    env:
-      DEPLOY_ENVIRONMENT: ${{ github.event_name == 'release' && 'prod' || 'staging' }}
-      IMAGE_TAG: ${{ github.event_name == 'release' && needs.jupyterhub-docker-build.outputs.semver_image_tag || 'main' }}
     steps:
-    - name: 'Trigger the Azure Pipeline deploy job'
-      uses: Azure/pipelines@releases/v1
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2.1.6
       with:
-        azure-devops-project-url: 'https://dev.azure.com/statisticsnorway/Statistikktjenester'
-        azure-pipeline-name: 'jupyterhub-onprem-deploy'
-        azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
-        azure-pipeline-variables:  '{"imageTag": "${{ env.IMAGE_TAG }}", "environment": "${{ env.DEPLOY_ENVIRONMENT }}"}'
+        workload_identity_provider: "projects/${{ secrets.GAR_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/gh-actions/providers/gh-actions"
+        service_account: "gh-actions-${{ env.TEAM_NAME}}@${{ secrets.GAR_PROJECT_ID }}.iam.gserviceaccount.com"
+        token_format: access_token
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Artifact Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: "oauth2accesstoken"
+        password: "${{ steps.auth.outputs.access_token }}"
+
+    - name: Extract build metadata for Docker
+      id: build_metadata
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.TEAM_NAME }}-docker/${{ env.IMAGE_NAME_HUB }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=semver,pattern=v{{version}}
+          type=semver,pattern=v{{major}}.{{minor}}
+          type=semver,pattern=v{{major}}
+          type=semver,pattern={{version}}
+          type=raw,value=${{ env.TAG }},enable=true
+
+    - name: Build and push Docker image to Artifact Registry
+      uses: docker/build-push-action@v6
+      with:
+        context: docker/jupyterhub
+        file: docker/jupyterhub/Dockerfile
+        push: true
+        tags: ${{ steps.build_metadata.outputs.tags }}
+        labels: ${{ steps.build_metadata.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
